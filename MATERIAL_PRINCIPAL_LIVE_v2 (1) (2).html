@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blocos de Estudo PE — PMPE+CBMPE e PCPE+PPPE</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   TOKENS — paleta cyber-militar aprimorada
+============================================================ */
+:root{
+  --preto:#050608; --grafite:#0E1015; --grafite-2:#161A22;
+  --vermelho:#FF2A3C; --vermelho-2:#FF4A4A; --sangue:#8A0F16; --vermelho-escuro:#4A0810;
+  --ciano:#00F0FF; --ciano-2:#00B8D4; --roxo:#7B2FF7;
+  --branco:#F5F5F3; --cinza:#8C9199; --cinza-2:#5A5F66; --cinza-3:#3A3F46;
+  --display:'Chakra Petch',sans-serif;
+  --display-orb:'Orbitron',sans-serif;
+  --cond:'Barlow Condensed',sans-serif;
+  --body:'Barlow',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --corte:polygon(0 14px,14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);
+  --corte-2:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+  --easing:cubic-bezier(.16,1,.3,1);
+  --glow-vermelho:0 0 20px rgba(255,42,60,.6),0 0 40px rgba(255,42,60,.3);
+  --glow-ciano:0 0 20px rgba(0,240,255,.5),0 0 40px rgba(0,240,255,.2);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--preto);color:var(--branco);font-family:var(--body);-webkit-font-smoothing:antialiased;overscroll-behavior:none;position:relative}
+::selection{background:var(--vermelho);color:#fff}
+
+/* ============================================================
+   CAMADAS DE FUNDO — grade cyber, ruído, glow, scanlines
+============================================================ */
+/* Grade de perspectiva cyber (chão tron) */
+.fundo-grade{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:
+    linear-gradient(rgba(255,42,60,.18) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,42,60,.18) 1px,transparent 1px);
+  background-size:60px 60px;background-position:center;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 100%,#000 0%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 100%,#000 0%,transparent 70%);
+  animation:gradeMove 14s linear infinite}
+@keyframes gradeMove{from{background-position:0 0,0 0}to{background-position:0 60px,60px 0}}
+
+/* Glow ambiente */
+.fundo-glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60% 60% at 82% 18%,rgba(255,42,60,.20),transparent 65%),
+    radial-gradient(45% 45% at 8% 92%,rgba(138,15,22,.28),transparent 70%),
+    radial-gradient(35% 35% at 50% 50%,rgba(0,240,255,.04),transparent 75%),
+    linear-gradient(180deg,#050608,#0A0C10 50%,#050608)}
+
+/* Linhas de circuito SVG */
+.fundo-circuitos{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35}
+.fundo-circuitos svg{width:100%;height:100%}
+.fundo-circuitos path{stroke:var(--vermelho);stroke-width:1;fill:none;stroke-dasharray:200;stroke-dashoffset:200;animation:trace 8s linear infinite}
+.fundo-circuitos path:nth-child(2){animation-delay:1s;stroke:var(--ciano);opacity:.5}
+.fundo-circuitos path:nth-child(3){animation-delay:2s}
+.fundo-circuitos path:nth-child(4){animation-delay:3s;stroke:var(--ciano);opacity:.4}
+@keyframes trace{0%{stroke-dashoffset:200;opacity:0}10%{opacity:.7}90%{opacity:.7}100%{stroke-dashoffset:-200;opacity:0}}
+
+/* Scanlines CRT */
+.fundo-scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.32;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px);
+  animation:scanMove 8s linear infinite}
+@keyframes scanMove{from{background-position:0 0}to{background-position:0 100px}}
+
+/* Linha de varredura horizontal */
+.fundo-varredura{position:fixed;left:0;right:0;height:120px;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(255,42,60,.08) 50%,transparent);
+  animation:varreduraFull 12s ease-in-out infinite;mix-blend-mode:screen}
+@keyframes varreduraFull{0%,100%{top:-120px;opacity:0}10%,90%{opacity:1}50%{top:100vh}}
+
+/* Textura de ruído (film grain) */
+.fundo-ruido{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.6'/></svg>");
+  animation:ruido .4s steps(4) infinite}
+@keyframes ruido{0%,100%{transform:translate(0,0)}25%{transform:translate(-2px,1px)}50%{transform:translate(1px,-1px)}75%{transform:translate(-1px,2px)}}
+
+#particulas{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+/* ============================================================
+   MOTOR DOS SLIDES
+============================================================ */
+.deck{position:relative;z-index:3;height:100%}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:clamp(52px,6vh,80px) clamp(20px,4vw,72px);
+  opacity:0;visibility:hidden;transform:scale(1.04);
+  transition:opacity .65s var(--easing),transform .85s var(--easing),visibility 0s .85s;will-change:opacity,transform}
+.slide.ativo{opacity:1;visibility:visible;transform:scale(1);transition:opacity .65s var(--easing),transform .85s var(--easing),visibility 0s 0s}
+.slide.saindo{opacity:0;transform:scale(.96) translateY(-6px)}
+.inner{width:100%;max-width:1500px;max-height:100%;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;position:relative;scroll-behavior:smooth}
+.inner::-webkit-scrollbar{display:none}
+
+/* ============================================================
+   TIPOGRAFIA
+============================================================ */
+.eyebrow{font-family:var(--cond);font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+  font-size:clamp(11px,.9vw,14px);color:var(--vermelho);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:"";width:30px;height:2px;background:var(--vermelho);box-shadow:var(--glow-vermelho)}
+.eyebrow.centro{justify-content:center}
+.eyebrow.puro::before{display:none}
+
+h1.titulo{font-family:var(--display);font-style:italic;font-weight:700;text-transform:uppercase;
+  font-size:clamp(32px,4.8vw,76px);line-height:1}
+h2.titulo{font-family:var(--display);font-style:italic;font-weight:700;text-transform:uppercase;
+  font-size:clamp(24px,3.1vw,48px);line-height:1.04;margin-bottom:26px}
+.titulo .rd{color:var(--vermelho);text-shadow:0 0 26px rgba(255,42,60,.7),0 0 60px rgba(255,42,60,.3)}
+/* Tipografia "cartaz" */
+.cartaz{font-family:var(--cond);font-weight:700;text-transform:uppercase;font-style:normal;
+  font-size:clamp(38px,7vw,110px);line-height:.86;letter-spacing:-.01em;position:relative}
+.cartaz .vazado{color:transparent;-webkit-text-stroke:1.5px var(--branco)}
+.sub{font-family:var(--cond);font-size:clamp(16px,1.45vw,24px);color:var(--cinza);line-height:1.45;max-width:60ch}
+.lead{font-size:clamp(14px,1.05vw,18px);color:var(--cinza);line-height:1.6;max-width:72ch}
+.nota{font-size:12px;color:var(--cinza-2);font-family:var(--cond);letter-spacing:.04em;margin-top:14px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza-2)}
+.mono b{color:var(--vermelho);font-weight:600}
+.chave{display:inline-block;background:linear-gradient(90deg,rgba(255,42,60,.32),rgba(255,42,60,0));
+  border-left:3px solid var(--vermelho);padding:2px 10px;color:#fff;font-weight:600;
+  box-shadow:inset 0 0 20px rgba(255,42,60,.1)}
+
+/* Efeito glitch nos títulos principais */
+.cartaz.split{position:relative}
+.cartaz.split::before,.cartaz.split::after{content:attr(data-glitch);position:absolute;top:0;left:0;
+  width:100%;height:100%;opacity:.85;clip-path:inset(0 0 0 0);pointer-events:none}
+.cartaz.split::before{color:var(--ciano);animation:glitchA 4s infinite linear alternate-reverse;mix-blend-mode:screen}
+.cartaz.split::after{color:var(--vermelho);animation:glitchB 4s infinite linear alternate-reverse;mix-blend-mode:screen}
+@keyframes glitchA{0%,92%,100%{transform:translate(0,0);clip-path:inset(0 0 0 0);opacity:0}
+  93%{transform:translate(-2px,1px);clip-path:inset(20% 0 50% 0);opacity:.7}
+  95%{transform:translate(2px,-1px);clip-path:inset(60% 0 10% 0);opacity:.5}
+  97%{transform:translate(-1px,1px);clip-path:inset(30% 0 30% 0);opacity:.6}}
+@keyframes glitchB{0%,90%,100%{transform:translate(0,0);clip-path:inset(0 0 0 0);opacity:0}
+  91%{transform:translate(2px,-1px);clip-path:inset(40% 0 30% 0);opacity:.6}
+  94%{transform:translate(-2px,1px);clip-path:inset(10% 0 60% 0);opacity:.5}
+  96%{transform:translate(1px,1px);clip-path:inset(50% 0 20% 0);opacity:.7}}
+
+.palavra{display:inline-block;white-space:nowrap}
+.espaco{display:inline-block;width:.28em}
+.letra{display:inline-block;opacity:0;transform:translateY(.5em) rotateX(-60deg);transform-origin:bottom;
+  text-shadow:0 0 12px rgba(255,42,60,.4)}
+.ativo .letra{animation:letraIn .5s var(--easing) forwards;animation-delay:calc(var(--i) * 24ms)}
+@keyframes letraIn{to{opacity:1;transform:none}}
+
+/* ============================================================
+   ENTRADAS
+============================================================ */
+[data-anim]{opacity:0;transition:opacity .7s var(--easing),transform .7s var(--easing),filter .7s;transition-delay:var(--d,0ms);will-change:opacity,transform}
+[data-anim="up"]{transform:translateY(36px)}
+[data-anim="down"]{transform:translateY(-28px)}
+[data-anim="left"]{transform:translateX(-48px)}
+[data-anim="right"]{transform:translateX(48px)}
+[data-anim="zoom"]{transform:scale(.86)}
+[data-anim="clip"]{clip-path:inset(0 100% 0 0);transform:none}
+[data-anim="fade"]{transform:none}
+.ativo [data-anim]{opacity:1;transform:none}
+.ativo [data-anim="clip"]{clip-path:inset(0 0 0 0);transition:opacity .5s,clip-path 1s var(--easing);transition-delay:var(--d,0ms)}
+
+@keyframes flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes flutua2{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pulsa{0%,100%{box-shadow:0 0 0 rgba(255,42,60,0),inset 0 0 30px rgba(255,42,60,.05)}
+  50%{box-shadow:0 0 60px rgba(255,42,60,.45),inset 0 0 50px rgba(255,42,60,.15)}}
+@keyframes pulsa-ciano{0%,100%{box-shadow:0 0 0 rgba(0,240,255,0),inset 0 0 30px rgba(0,240,255,.05)}
+  50%{box-shadow:0 0 50px rgba(0,240,255,.35),inset 0 0 40px rgba(0,240,255,.12)}}
+@keyframes gira{to{transform:rotate(360deg)}}
+@keyframes varre{0%{transform:translateY(-100%)}100%{transform:translateY(600%)}}
+@keyframes pulso-borda{0%,100%{border-color:rgba(255,42,60,.4)}50%{border-color:rgba(255,42,60,.9);box-shadow:0 0 20px rgba(255,42,60,.3)}}
+@keyframes piscar{0%,49%,100%{opacity:1}50%,99%{opacity:.3}}
+
+/* ============================================================
+   ESTILO A — "JANELA" — aprimorado com borda holográfica
+============================================================ */
+.janela{position:relative;border-radius:18px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(22,26,34,.85),rgba(9,10,12,.92));
+  border:1px solid rgba(255,42,60,.25);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 40px 90px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08),0 0 60px rgba(255,42,60,.08)}
+/* Borda holográfica animada */
+.janela::before{content:"";position:absolute;inset:-1px;border-radius:18px;padding:1px;
+  background:conic-gradient(from var(--ang,0deg),transparent 0%,rgba(255,42,60,.6) 20%,transparent 40%,rgba(0,240,255,.4) 60%,transparent 80%,rgba(255,42,60,.6) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+  animation:rotAng 8s linear infinite;opacity:.6}
+@keyframes rotAng{to{--ang:360deg}}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+
+.janela-bar{display:flex;align-items:center;gap:18px;padding:14px 22px;
+  border-bottom:1px solid rgba(255,42,60,.18);background:rgba(0,0,0,.4);position:relative}
+.janela-bar::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:30%;
+  background:linear-gradient(90deg,var(--vermelho),transparent);box-shadow:var(--glow-vermelho)}
+.janela-bar .marca{font-family:var(--display-orb);font-weight:700;font-size:13px;color:var(--vermelho);
+  letter-spacing:.16em;text-shadow:0 0 12px rgba(255,42,60,.6)}
+.janela-bar nav{display:flex;gap:20px;font-family:var(--cond);font-size:13px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--cinza)}
+.janela-bar nav span.on{color:var(--branco);border-bottom:2px solid var(--vermelho);padding-bottom:2px;
+  text-shadow:0 0 10px rgba(255,42,60,.4)}
+.janela-bar .pesq{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid rgba(255,42,60,.2);
+  border-radius:999px;padding:5px 14px;font-family:var(--cond);font-size:12px;color:var(--cinza-2);min-width:150px}
+.janela-body{padding:clamp(22px,3vw,42px);position:relative}
+
+/* ============================================================
+   ESTILO B — "HUD" — colchetes animados + scanline
+============================================================ */
+.hud{position:relative;padding:clamp(20px,2.6vw,36px);background:rgba(10,12,16,.75);
+  border:1px solid rgba(255,42,60,.22);backdrop-filter:blur(12px);
+  box-shadow:0 0 40px rgba(255,42,60,.08),inset 0 0 60px rgba(255,42,60,.04)}
+.hud::before,.hud::after{content:"";position:absolute;width:26px;height:26px;border:2px solid var(--vermelho);
+  filter:drop-shadow(0 0 10px rgba(255,42,60,.9))}
+.hud::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.hud::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+/* Colchetes extras nos outros cantos */
+.hud .canto-tr,.hud .canto-bl{position:absolute;width:18px;height:18px;border:1px solid rgba(0,240,255,.6);
+  filter:drop-shadow(0 0 6px rgba(0,240,255,.5))}
+.hud .canto-tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.hud .canto-bl{bottom:-1px;left:-1px;border-right:0;border-top:0}
+.hud-tag{position:absolute;top:-9px;left:26px;background:var(--preto);padding:0 10px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--vermelho);
+  text-shadow:0 0 8px rgba(255,42,60,.6)}
+.hud-tag::before{content:"●";color:var(--vermelho);margin-right:6px;animation:piscar 1.4s infinite}
+.scanline{position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--vermelho),transparent);pointer-events:none;
+  box-shadow:0 0 12px var(--vermelho)}
+.ativo .scanline{animation:varre 6s linear infinite}
+
+/* ============================================================
+   ESTILO C — "PROJETO" — card numerado com tilt 3D
+============================================================ */
+.proj{position:relative;padding:24px 22px 58px;
+  background:linear-gradient(180deg,rgba(20,24,32,.92),rgba(8,9,12,.95));
+  border:1px solid rgba(255,255,255,.1);
+  transition:border-color .4s var(--easing),transform .4s var(--easing),background .4s,box-shadow .4s;
+  overflow:hidden}
+.proj::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(255,42,60,.08) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform .8s var(--easing)}
+.proj:hover::before{transform:translateX(100%)}
+.proj:hover{border-color:var(--vermelho);transform:translateY(-8px);
+  background:linear-gradient(180deg,rgba(40,16,20,.95),rgba(10,11,13,.98));
+  box-shadow:0 20px 50px rgba(255,42,60,.25),0 0 0 1px rgba(255,42,60,.3)}
+.proj .n{font-family:var(--display-orb);font-weight:900;font-size:34px;color:var(--vermelho);line-height:1;
+  margin-bottom:14px;text-shadow:var(--glow-vermelho);letter-spacing:.05em}
+.proj h3{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  font-size:17px;margin-bottom:8px;position:relative}
+.proj h3::after{content:"";display:block;width:24px;height:2px;background:var(--vermelho);
+  margin-top:8px;box-shadow:var(--glow-vermelho)}
+.proj p{color:var(--cinza);font-size:14px;line-height:1.55}
+.proj .seta{position:absolute;left:22px;bottom:20px;width:32px;height:32px;border:1px solid rgba(255,255,255,.18);
+  border-radius:50%;display:grid;place-items:center;font-size:13px;color:var(--cinza);transition:all .3s}
+.proj:hover .seta{background:var(--vermelho);border-color:var(--vermelho);color:#fff;
+  box-shadow:0 0 20px rgba(255,42,60,.7);transform:rotate(45deg)}
+
+/* ============================================================
+   ESTILO D — "PILL"
+============================================================ */
+.pill{display:flex;align-items:center;gap:18px;border:1px solid rgba(255,255,255,.14);border-radius:999px;
+  padding:14px 26px;background:rgba(18,20,26,.85);transition:all .4s var(--easing);position:relative;overflow:hidden}
+.pill::after{content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(255,42,60,.15),transparent);
+  transition:width .5s var(--easing)}
+.pill:hover{border-color:var(--vermelho);background:rgba(255,42,60,.08);transform:translateX(10px);
+  box-shadow:0 0 30px rgba(255,42,60,.15)}
+.pill:hover::after{width:100%}
+.pill .n{font-family:var(--display-orb);font-weight:900;font-size:22px;color:var(--vermelho);min-width:38px;
+  text-shadow:var(--glow-vermelho)}
+.pill h3{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:15px;margin-bottom:1px}
+.pill p{color:var(--cinza);font-size:13.5px;line-height:1.4}
+.trilho{display:flex;flex-direction:column;gap:12px;position:relative;padding-left:16px}
+.trilho::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:1px;
+  background:linear-gradient(180deg,var(--vermelho),rgba(255,42,60,.1));
+  box-shadow:0 0 8px var(--vermelho)}
+
+/* ============================================================
+   ESTILO E — "DOSSIÊ"
+============================================================ */
+.dossie{list-style:none;display:flex;flex-direction:column;gap:2px}
+.dossie li{display:flex;align-items:baseline;gap:8px;font-family:var(--cond);font-size:clamp(13px,1vw,16.5px);
+  padding:7px 4px;border-bottom:1px dashed rgba(255,255,255,.08);letter-spacing:.02em;transition:all .25s}
+.dossie li:hover{padding-left:8px;background:rgba(255,42,60,.05)}
+.dossie li .pt{flex:1;border-bottom:1px dotted rgba(255,255,255,.14);transform:translateY(-3px)}
+.dossie li .st{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--cinza-2)}
+.dossie li.comum{color:#fff;font-weight:600}
+.dossie li.comum .st{color:var(--vermelho);text-shadow:0 0 8px rgba(255,42,60,.6)}
+.dossie li.solo{color:var(--cinza)}
+
+/* Listas de disciplinas */
+.disc{list-style:none;display:flex;flex-direction:column;gap:6px}
+.disc li{display:flex;align-items:center;gap:10px;font-family:var(--cond);font-size:clamp(13px,1vw,16.5px);
+  padding:8px 12px;background:rgba(255,255,255,.03);border-left:3px solid rgba(255,255,255,.12);
+  transition:background .3s,border-color .3s,transform .3s;position:relative}
+.disc li:hover{background:rgba(255,42,60,.1);transform:translateX(4px)}
+.disc li.comum{border-left-color:var(--vermelho);background:rgba(255,42,60,.12);color:#fff;font-weight:600;
+  box-shadow:inset 0 0 20px rgba(255,42,60,.05)}
+.disc li.comum::before{content:"■";color:var(--vermelho);font-size:9px;text-shadow:0 0 10px var(--vermelho)}
+.disc li.solo{color:var(--cinza)}
+.disc li.solo::before{content:"□";color:var(--cinza-2);font-size:9px}
+
+/* Selo circular */
+.selo{width:clamp(140px,14vw,190px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  text-align:center;padding:14px;background:radial-gradient(circle,rgba(255,42,60,.32),rgba(5,6,8,.95) 72%);
+  border:2px solid var(--vermelho);animation:pulsa 2.8s ease-in-out infinite;position:relative}
+.selo::before{content:"";position:absolute;inset:-8px;border:1px dashed rgba(255,42,60,.4);border-radius:50%;
+  animation:gira 30s linear infinite}
+.selo::after{content:"";position:absolute;inset:-14px;border:1px solid rgba(0,240,255,.2);border-radius:50%;
+  animation:gira 24s linear infinite reverse}
+.selo .big{font-family:var(--display-orb);font-weight:900;font-size:clamp(26px,3.2vw,46px);
+  line-height:1;color:var(--vermelho);text-shadow:0 0 30px rgba(255,42,60,.8),0 0 60px rgba(255,42,60,.4)}
+.selo .cap{font-family:var(--cond);text-transform:uppercase;letter-spacing:.12em;
+  font-size:clamp(9px,.75vw,11.5px);color:var(--branco);margin-top:6px;line-height:1.25}
+
+/* Escudo */
+.escudo{width:50px;height:56px;flex:0 0 50px;display:grid;place-items:center;
+  background:linear-gradient(160deg,var(--grafite-2),var(--preto));border:2px solid rgba(255,42,60,.75);
+  clip-path:polygon(50% 0,100% 18%,100% 68%,50% 100%,0 68%,0 18%);
+  font-family:var(--display-orb);font-weight:700;font-size:14px;color:var(--branco);
+  text-shadow:var(--glow-vermelho);box-shadow:0 0 18px rgba(255,42,60,.3)}
+.cab{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.cab h3{font-family:var(--display);font-style:italic;font-weight:700;text-transform:uppercase;
+  font-size:clamp(16px,1.5vw,22px);line-height:1}
+.cab .meta{font-family:var(--mono);color:var(--cinza-2);letter-spacing:.08em;text-transform:uppercase;font-size:9.5px;margin-top:4px}
+
+/* ============================================================
+   DIAGRAMA ORBITAL — versão tech avançada (slide 4)
+   Bola central com anéis concêntricos, radar, grade holográfica
+============================================================ */
+.orbita{position:relative;width:min(560px,72vw);aspect-ratio:1;margin:0 auto}
+
+/* Camada SVG: anéis, grade, radar, conexões */
+.orbita-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible}
+.anel-orb{fill:none;stroke:var(--vermelho);stroke-width:1;opacity:.5;
+  filter:drop-shadow(0 0 4px rgba(255,42,60,.5))}
+.anel-orb.dashed{stroke-dasharray:3 8;opacity:.6}
+.anel-orb.ciano{stroke:var(--ciano);opacity:.35;filter:drop-shadow(0 0 4px rgba(0,240,255,.4))}
+.anel-orb.rotate{transform-origin:center;animation:gira 30s linear infinite}
+.anel-orb.rotate-rev{transform-origin:center;animation:gira 24s linear infinite reverse}
+.anel-orb.rotate-fast{transform-origin:center;animation:gira 14s linear infinite}
+
+/* Grade holográfica (círculos + cruz) */
+.grade-orb{stroke:rgba(255,255,255,.1);stroke-width:.5;fill:none}
+.grade-orb.diag{stroke:rgba(255,255,255,.06)}
+
+/* Linhas de conexão núcleo→satélites (animadas) */
+.linhas-orb{stroke:var(--vermelho);stroke-width:1;opacity:.5;stroke-dasharray:4 6;
+  filter:drop-shadow(0 0 3px rgba(255,42,60,.6))}
+.ativo .linhas-orb{animation:corre 18s linear infinite}
+@keyframes corre{to{stroke-dashoffset:-200}}
+
+/* Nós nos anéis (pontos de dados) */
+.no-orb{fill:var(--vermelho);filter:drop-shadow(0 0 6px rgba(255,42,60,1))}
+.no-orb.ciano{fill:var(--ciano);filter:drop-shadow(0 0 6px rgba(0,240,255,1))}
+
+/* Cone de radar (varredura giratória) */
+.radar-sweep{transform-origin:center;animation:gira 6s linear infinite;opacity:.7}
+.radar-sweep stop{stop-color:var(--vermelho)}
+
+/* Núcleo — a bola tecnológica que se movimenta (bouncing corner-to-corner) */
+.nucleo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:clamp(120px,13vw,170px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;text-align:center;
+  background:
+    radial-gradient(circle at 30% 30%,rgba(255,90,100,.7),transparent 50%),
+    radial-gradient(circle,rgba(255,42,60,.45),rgba(5,6,8,.98) 70%);
+  border:2px solid var(--vermelho);
+  font-family:var(--display-orb);font-weight:700;text-transform:uppercase;font-size:clamp(11px,.9vw,14px);
+  color:#fff;letter-spacing:.08em;
+  text-shadow:0 0 10px rgba(255,255,255,.9),0 0 20px rgba(255,42,60,.8),0 0 30px rgba(255,42,60,.5);
+  padding:10px;z-index:6;opacity:0;
+  box-shadow:
+    0 0 50px rgba(255,42,60,.55),
+    0 0 100px rgba(255,42,60,.25),
+    inset 0 0 30px rgba(255,42,60,.25),
+    inset 0 0 60px rgba(0,0,0,.5)}
+/* Quando o slide está ativo: pulsa + fade in + bouncing corner-to-corner */
+.ativo .nucleo{
+  animation:
+    pulsa 3s ease-in-out infinite,
+    nucleoIn .6s var(--easing) .4s forwards,
+    bounceOrbit 14s cubic-bezier(.5,0,.5,1) 1s infinite;
+}
+@keyframes nucleoIn{
+  from{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+/* Bouncing: vai de canto em canto (TL → TR → BR → BL → TL → centro) */
+@keyframes bounceOrbit{
+  0%       { top:50%; left:50%; filter:drop-shadow(0 0 30px rgba(255,42,60,.8)); }
+  6%, 14%  { top:18%; left:18%; filter:drop-shadow(0 0 40px rgba(255,42,60,.9)); }   /* canto superior-esquerdo */
+  20%, 28% { top:18%; left:82%; filter:drop-shadow(0 0 40px rgba(255,42,60,.9)); }   /* canto superior-direito  */
+  34%, 42% { top:82%; left:82%; filter:drop-shadow(0 0 40px rgba(255,42,60,.9)); }   /* canto inferior-direito  */
+  48%, 56% { top:82%; left:18%; filter:drop-shadow(0 0 40px rgba(255,42,60,.9)); }   /* canto inferior-esquerdo */
+  62%, 70% { top:18%; left:18%; filter:drop-shadow(0 0 40px rgba(255,42,60,.9)); }   /* volta ao TL             */
+  78%, 86% { top:50%; left:50%; filter:drop-shadow(0 0 30px rgba(255,42,60,.8)); }   /* descansa no centro      */
+  100%     { top:50%; left:50%; filter:drop-shadow(0 0 30px rgba(255,42,60,.8)); }
+}
+/* Anel tracejado girando ao redor do núcleo */
+.nucleo::before{content:"";position:absolute;inset:-12px;border:1px dashed rgba(255,42,60,.65);border-radius:50%;
+  animation:gira 18s linear infinite}
+/* Anel ciano externo */
+.nucleo::after{content:"";position:absolute;inset:-22px;border:1px solid rgba(0,240,255,.35);border-radius:50%;
+  animation:gira 22s linear infinite reverse;clip-path:polygon(0 0,100% 0,100% 30%,0 30%,0 70%,100% 70%,100% 100%,0 100%)}
+
+/* Tick marks ao redor do núcleo (mostrador) */
+.nucleo-ticks{position:absolute;inset:-40px;pointer-events:none;animation:gira 40s linear infinite}
+
+/* Satélites — nós de dados nas bordas */
+.satelite{position:absolute;transform:translate(-50%,-50%);font-family:var(--cond);font-weight:600;
+  text-transform:uppercase;letter-spacing:.05em;font-size:clamp(11px,.95vw,15px);
+  background:rgba(10,12,16,.96);border:1px solid rgba(255,42,60,.6);padding:9px 14px;
+  clip-path:var(--corte);white-space:nowrap;opacity:0;z-index:4;
+  box-shadow:0 0 18px rgba(255,42,60,.25),inset 0 0 12px rgba(255,42,60,.06)}
+.satelite::before{content:"";position:absolute;left:-6px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;background:var(--vermelho);border-radius:50%;
+  box-shadow:0 0 10px var(--vermelho)}
+.satelite.right::before{left:auto;right:-6px}
+.ativo .satelite{animation:satIn .6s var(--easing) forwards,flutua2 5s ease-in-out infinite;
+  animation-delay:calc(var(--d) + .2s),calc(var(--d) + .8s)}
+@keyframes satIn{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+
+/* Leitura de coordenadas tech (cantos do orbita) */
+.orb-readout{position:absolute;font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ciano);opacity:.7;z-index:3;text-shadow:0 0 6px rgba(0,240,255,.5)}
+.orb-readout.tl{top:2%;left:2%}
+.orb-readout.tr{top:2%;right:2%;text-align:right}
+.orb-readout.bl{bottom:2%;left:2%}
+.orb-readout.br{bottom:2%;right:2%;text-align:right}
+.orb-readout b{color:var(--vermelho)}
+
+/* Labels nos anéis (matéria + % ) */
+.orb-label{position:absolute;transform:translate(-50%,-50%);font-family:var(--mono);font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--cinza);z-index:3;
+  background:rgba(5,6,8,.9);padding:2px 6px;border:1px solid rgba(255,255,255,.1)}
+
+/* Fita de dias */
+.fita{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
+.dia{background:linear-gradient(170deg,rgba(24,28,36,.85),rgba(8,9,12,.9));
+  border:1px solid rgba(255,255,255,.1);clip-path:var(--corte);padding:16px 14px;
+  transition:transform .35s var(--easing),border-color .35s,box-shadow .35s;position:relative;overflow:hidden}
+.dia::before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--vermelho),transparent);
+  transform:translateX(-100%);transition:transform .6s var(--easing)}
+.dia:hover::before{transform:translateX(100%)}
+.dia:hover{transform:translateY(-9px);border-color:var(--vermelho);
+  box-shadow:0 10px 30px rgba(255,42,60,.2),0 0 0 1px rgba(255,42,60,.3)}
+.dia .d{font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;font-size:9.5px;color:var(--vermelho);
+  margin-bottom:8px;text-shadow:0 0 8px rgba(255,42,60,.5)}
+.dia .m{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:13.5px;line-height:1.25}
+.dia .h{font-family:var(--cond);color:var(--cinza);font-size:12.5px;margin-top:6px}
+.dia.forte{border-color:rgba(255,42,60,.5);box-shadow:0 0 26px rgba(255,42,60,.18)}
+.dia.num{position:relative;padding-top:26px}
+.dia.num .idx{position:absolute;top:8px;right:12px;font-family:var(--display-orb);font-weight:900;
+  font-size:22px;color:transparent;-webkit-text-stroke:1px rgba(255,42,60,.6)}
+
+/* Tabela */
+.tabela-wrap{overflow-x:auto;position:relative}
+.tabela-wrap::-webkit-scrollbar{height:6px}
+.tabela-wrap::-webkit-scrollbar-thumb{background:var(--vermelho);border-radius:3px}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th,td{padding:10px 14px;text-align:center;border-bottom:1px solid rgba(255,255,255,.07)}
+thead th{font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.12em;
+  color:var(--branco);border-bottom:2px solid var(--vermelho);padding-bottom:12px;
+  text-shadow:0 0 8px rgba(255,42,60,.3)}
+thead th:not(:first-child)::before{content:"";display:inline-block;width:6px;height:6px;
+  background:var(--vermelho);margin-right:6px;box-shadow:var(--glow-vermelho);vertical-align:middle}
+tbody th{text-align:left;font-family:var(--cond);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:14px}
+tbody tr{transition:background .25s}
+tbody tr:hover{background:rgba(255,42,60,.08)}
+tbody tr.destaque th{color:#fff;border-left:3px solid var(--vermelho)}
+tbody tr.destaque{background:rgba(255,42,60,.06)}
+.sim{color:var(--vermelho);font-weight:700;font-size:16px;text-shadow:0 0 12px rgba(255,42,60,.7)}
+.nao{color:#3F444B;font-size:16px}
+.legenda{display:flex;gap:22px;flex-wrap:wrap;margin-top:14px;font-family:var(--cond);font-size:13px;color:var(--cinza)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;
+  border-top:1px solid rgba(255,42,60,.25);border-bottom:1px solid rgba(255,42,60,.25);padding:26px 0;position:relative}
+.stats::before{content:"";position:absolute;left:0;top:-1px;width:30%;height:1px;
+  background:var(--vermelho);box-shadow:var(--glow-vermelho)}
+.stat{text-align:center;position:relative}
+.stat+.stat::before{content:"";position:absolute;left:-10px;top:10%;bottom:10%;width:1px;background:rgba(255,255,255,.08)}
+.stat .v{font-family:var(--display-orb);font-weight:900;font-size:clamp(40px,5.5vw,84px);line-height:.9;color:var(--vermelho);
+  text-shadow:0 0 34px rgba(255,42,60,.55),0 0 70px rgba(255,42,60,.25)}
+.stat .l{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cinza);margin-top:10px;line-height:1.5}
+
+/* Barras */
+.grafico{display:flex;align-items:flex-end;gap:clamp(16px,3vw,44px);height:clamp(150px,24vh,230px)}
+.barra-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.barra{width:100%;max-width:120px;background:linear-gradient(180deg,var(--vermelho),var(--sangue));
+  box-shadow:0 0 30px rgba(255,42,60,.5),inset 0 0 20px rgba(255,255,255,.1);height:0;
+  transition:height 1.6s var(--easing);clip-path:polygon(0 12px,12px 0,100% 0,100% 100%,0 100%);position:relative}
+.barra::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:#fff;box-shadow:0 0 12px #fff;opacity:.8}
+.barra.cinza{background:linear-gradient(180deg,#3A3E45,#1B1D21);box-shadow:none}
+.barra.cinza::after{display:none}
+.barra-col .val{font-family:var(--display-orb);font-weight:900;font-size:clamp(20px,2.2vw,34px);margin-bottom:8px;
+  text-shadow:var(--glow-vermelho)}
+.barra-col .lab{font-family:var(--cond);text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--cinza);margin-top:10px;text-align:center}
+
+/* Emblema da capa */
+.emblema{position:relative;width:min(400px,78%);aspect-ratio:1;margin:0 auto}
+.ativo .emblema{animation:flutua 7s ease-in-out infinite}
+.emblema svg{width:100%;height:100%;overflow:visible}
+.anel{fill:none;stroke:var(--vermelho);stroke-width:1;opacity:.6;transform-origin:center;
+  filter:drop-shadow(0 0 6px rgba(255,42,60,.6))}
+.ativo .anel-1{animation:gira 26s linear infinite}
+.ativo .anel-2{animation:gira 38s linear infinite reverse}
+.grade{stroke:rgba(255,255,255,.15);stroke-width:.6}
+.no{fill:var(--vermelho);filter:drop-shadow(0 0 8px rgba(255,42,60,1))}
+.rotulo{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:10px;fill:var(--branco);letter-spacing:.14em}
+.centro-txt{font-family:'Orbitron',sans-serif;font-weight:900;font-size:13px;fill:var(--vermelho);letter-spacing:.16em}
+
+.metabar{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  border-bottom:1px solid rgba(255,42,60,.25);padding-bottom:14px;margin-bottom:clamp(22px,4vh,50px);position:relative}
+.metabar::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:25%;
+  background:var(--vermelho);box-shadow:var(--glow-vermelho)}
+
+/* Fontes */
+.fontes{list-style:none;display:flex;flex-direction:column;gap:9px;font-family:var(--cond);font-size:14px}
+.fontes li{padding:9px 14px;background:rgba(255,255,255,.03);border-left:3px solid var(--vermelho);
+  transition:all .3s}
+.fontes li:hover{background:rgba(255,42,60,.08);transform:translateX(6px)}
+.fontes a{color:var(--cinza);text-decoration:none;word-break:break-all;font-size:13px}
+.fontes a:hover{color:var(--vermelho);text-shadow:0 0 8px rgba(255,42,60,.5)}
+.fontes b{color:var(--branco);display:block;font-family:var(--display);font-size:13px;text-transform:uppercase;margin-bottom:2px}
+
+/* Grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.6vw,44px);align-items:center}
+.g2b{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(18px,2.6vw,44px);align-items:center}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.tri{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(14px,2.2vw,34px);align-items:center}
+.seta-mid{display:grid;place-items:center;font-size:30px;color:var(--vermelho);text-shadow:var(--glow-vermelho);
+  animation:flutua2 3s ease-in-out infinite}
+.divisor{height:1px;background:linear-gradient(90deg,var(--vermelho),transparent);margin:18px 0;
+  box-shadow:0 0 8px rgba(255,42,60,.5)}
+
+/* Títulos de coluna (comparativo O que você faz / O que você deve fazer) */
+.col-titulo{margin-bottom:14px;padding:14px 16px;position:relative;clip-path:var(--corte);
+  background:rgba(10,12,16,.7);border:1px solid rgba(255,255,255,.1)}
+.col-titulo.ruim{border-color:rgba(255,42,60,.4);background:linear-gradient(135deg,rgba(255,42,60,.12),rgba(255,42,60,.02))}
+.col-titulo.bom{border-color:rgba(0,240,255,.4);background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(0,240,255,.02))}
+.col-titulo::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%}
+.col-titulo.ruim::before{background:var(--vermelho);box-shadow:var(--glow-vermelho)}
+.col-titulo.bom::before{background:var(--ciano);box-shadow:var(--glow-ciano)}
+.col-tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  padding:3px 8px;border:1px solid currentColor;clip-path:var(--corte);margin-bottom:8px}
+.col-titulo.ruim .col-tag{color:var(--vermelho)}
+.col-titulo.bom .col-tag{color:var(--ciano)}
+.col-nome{font-family:var(--display-orb);font-weight:900;text-transform:uppercase;letter-spacing:.02em;
+  font-size:clamp(18px,1.7vw,26px);line-height:1;color:#fff;margin-bottom:6px}
+.col-titulo.ruim .col-nome{text-shadow:0 0 12px rgba(255,42,60,.4)}
+.col-titulo.bom .col-nome{text-shadow:0 0 12px rgba(0,240,255,.4)}
+.col-sub{font-family:var(--cond);font-size:13px;color:var(--cinza);letter-spacing:.04em;text-transform:uppercase}
+
+/* ============================================================
+   HUD DA APRESENTAÇÃO — aprimorado
+============================================================ */
+.progresso{position:fixed;top:0;left:0;height:3px;background:var(--vermelho);
+  box-shadow:0 0 14px var(--vermelho),0 0 30px rgba(255,42,60,.5);z-index:50;width:0;
+  transition:width .55s var(--easing);border-radius:0 2px 2px 0}
+.progresso::after{content:"";position:absolute;right:0;top:-3px;width:3px;height:9px;
+  background:#fff;box-shadow:0 0 10px #fff}
+
+/* HUD top-left — identificação */
+.hud-top{position:fixed;top:16px;left:clamp(16px,3.5vw,40px);z-index:50;font-family:var(--mono);font-weight:600;
+  letter-spacing:.16em;font-size:10px;text-transform:uppercase;display:flex;align-items:center;gap:9px;color:var(--cinza)}
+.hud-top i{width:7px;height:7px;background:var(--vermelho);display:block;box-shadow:0 0 10px var(--vermelho);
+  animation:piscar 1.4s infinite}
+
+/* HUD top-right — relógio/coordenadas */
+.hud-status{position:fixed;top:16px;right:clamp(16px,3.5vw,40px);z-index:50;
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--cinza);text-align:right;line-height:1.6}
+.hud-status .linha{display:flex;justify-content:flex-end;gap:8px;align-items:center}
+.hud-status .val{color:var(--branco)}
+.hud-status .val.ciano{color:var(--ciano);text-shadow:0 0 8px rgba(0,240,255,.5)}
+.hud-status .val.rd{color:var(--vermelho);text-shadow:0 0 8px rgba(255,42,60,.5)}
+
+/* Contador */
+.contador{position:fixed;bottom:18px;right:clamp(16px,3.5vw,40px);z-index:50;
+  font-family:var(--display-orb);font-weight:700;font-size:13px;letter-spacing:.05em}
+.contador b{color:var(--vermelho);font-size:23px;text-shadow:var(--glow-vermelho)}
+.contador span{color:var(--cinza)}
+
+/* Dicas */
+.dicas{position:fixed;bottom:20px;left:clamp(16px,3.5vw,40px);z-index:50;font-family:var(--mono);
+  letter-spacing:.12em;text-transform:uppercase;font-size:9.5px;color:var(--cinza-2)}
+
+/* Menu lateral */
+.menu{position:fixed;right:clamp(10px,1.6vw,22px);top:50%;transform:translateY(-50%);z-index:50;
+  display:flex;flex-direction:column;gap:9px}
+.menu button{width:22px;height:8px;background:rgba(255,255,255,.16);border:0;cursor:pointer;padding:0;
+  clip-path:polygon(0 0,100% 0,80% 100%,0 100%);transition:all .3s var(--easing)}
+.menu button:hover{background:var(--cinza)}
+.menu button.on{background:var(--vermelho);box-shadow:0 0 12px var(--vermelho);width:36px}
+.menu button:focus-visible,.setas button:focus-visible{outline:2px solid var(--branco);outline-offset:3px}
+
+/* Setas de navegação */
+.setas{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:50;display:flex;gap:9px}
+.setas button{width:42px;height:34px;background:rgba(255,42,60,.08);border:1px solid rgba(255,42,60,.3);
+  color:var(--branco);cursor:pointer;font-size:14px;clip-path:var(--corte);transition:all .3s var(--easing);
+  display:grid;place-items:center;font-family:var(--mono);font-weight:700}
+.setas button:hover{background:var(--vermelho);border-color:var(--vermelho);
+  box-shadow:0 0 20px rgba(255,42,60,.6);transform:scale(1.08)}
+
+/* Cantos decorativos do viewport */
+.canto{position:fixed;width:24px;height:24px;z-index:49;pointer-events:none;
+  border:1px solid rgba(255,42,60,.5);filter:drop-shadow(0 0 4px rgba(255,42,60,.4))}
+.canto.tl{top:8px;left:8px;border-right:0;border-bottom:0}
+.canto.tr{top:8px;right:8px;border-left:0;border-bottom:0;border-color:rgba(0,240,255,.5);
+  filter:drop-shadow(0 0 4px rgba(0,240,255,.4))}
+.canto.bl{bottom:8px;left:8px;border-right:0;border-top:0;border-color:rgba(0,240,255,.5);
+  filter:drop-shadow(0 0 4px rgba(0,240,255,.4))}
+.canto.br{bottom:8px;right:8px;border-left:0;border-top:0}
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+@media (max-width:980px){
+  .g2,.g2b,.tri{grid-template-columns:1fr}
+  .selo{margin:0 auto}
+  .orbita{aspect-ratio:1/1.2}
+  .menu{display:none}
+  .janela-bar nav,.janela-bar .pesq{display:none}
+  .stat+.stat::before{display:none}
+  .hud-status{display:none}
+}
+@media (min-width:2200px){.inner{max-width:1900px}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+  .letra,.satelite{opacity:1;transform:none}
+}
+
+
+/* Fases semanais */
+.fases{display:flex;gap:8px;flex-wrap:wrap}
+.fase{display:flex;align-items:center;gap:10px;padding:10px 18px;background:rgba(18,20,26,.85);
+  border:1px solid rgba(255,255,255,.1);clip-path:var(--corte);transition:all .35s var(--easing);flex:1;min-width:120px}
+.fase:hover{border-color:var(--vermelho);transform:translateY(-4px);box-shadow:0 0 20px rgba(255,42,60,.2)}
+.fase-n{font-family:var(--display-orb);font-weight:900;font-size:20px;color:var(--vermelho);text-shadow:var(--glow-vermelho)}
+.fase-lbl{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:11px;color:var(--branco)}
+
+/* Tabela de missões */
+.missao-tbl{width:100%;border-collapse:collapse;min-width:650px;font-size:clamp(11px,.85vw,13.5px)}
+.missao-tbl th{padding:8px 10px;text-align:center;border-bottom:2px solid var(--vermelho);
+  font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:10px;letter-spacing:.14em;color:var(--branco);
+  text-shadow:0 0 8px rgba(255,42,60,.3)}
+.missao-tbl th:not(:first-child)::before{content:"";display:inline-block;width:5px;height:5px;
+  background:var(--vermelho);margin-right:5px;box-shadow:var(--glow-vermelho);vertical-align:middle}
+.missao-tbl td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:middle}
+.missao-tbl tr{transition:background .25s}
+.missao-tbl tr:hover{background:rgba(255,42,60,.06)}
+.dia-lbl{font-family:var(--display-orb);font-weight:900;font-size:13px;color:var(--vermelho);
+  text-shadow:0 0 10px rgba(255,42,60,.6);letter-spacing:.05em}
+.meta-q{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--ciano);
+  letter-spacing:.08em;text-shadow:0 0 8px rgba(0,240,255,.4)}
+
+</style>
+</head>
+<body>
+
+<!-- CAMADAS DE FUNDO -->
+<div class="fundo-glow"></div>
+<div class="fundo-grade"></div>
+<div class="fundo-circuitos" aria-hidden="true">
+  <svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
+    <path d="M0,200 L300,200 L320,220 L600,220 L620,200 L900,200 L920,180 L1200,180"/>
+    <path d="M0,500 L250,500 L270,480 L500,480 L520,500 L800,500 L820,520 L1100,520 L1120,500 L1400,500"/>
+    <path d="M0,800 L200,800 L220,820 L450,820 L470,800 L750,800 L770,780 L1050,780 L1070,800 L1350,800"/>
+    <path d="M1920,300 L1620,300 L1600,320 L1300,320 L1280,300 L1000,300"/>
+  </svg>
+</div>
+<canvas id="particulas"></canvas>
+<div class="fundo-scan"></div>
+<div class="fundo-varredura"></div>
+<div class="fundo-ruido"></div>
+
+<!-- CANTOS DECORATIVOS -->
+<div class="canto tl"></div>
+<div class="canto tr"></div>
+<div class="canto bl"></div>
+<div class="canto br"></div>
+
+<!-- HUD DA APRESENTAÇÃO -->
+<div class="progresso" id="progresso"></div>
+<div class="hud-top"><i></i> Blocos de estudo · Segurança Pública PE</div>
+<div class="hud-status">
+  <div class="linha"><span>SYS</span><span class="val ciano" id="sysTime">--:--:--</span></div>
+  <div class="linha"><span>LAT</span><span class="val">-8.0476°</span><span>LON</span><span class="val">-34.8770°</span></div>
+  <div class="linha"><span>STATUS</span><span class="val rd">● ONLINE</span></div>
+</div>
+<div class="contador"><b id="atual">01</b><span> / <span id="total">18</span></span></div>
+<div class="dicas">← → · scroll · clique · swipe</div>
+<nav class="menu" id="menu" aria-label="Navegação dos slides"></nav>
+<div class="setas">
+  <button id="btnPrev" aria-label="Slide anterior">◄</button>
+  <button id="btnNext" aria-label="Próximo slide">►</button>
+</div>
+
+<main class="deck" id="deck">
+<!-- ============================================================
+     01 · CAPA — layout editorial com barra de metadados (ref. 2)
+============================================================ -->
+<section class="slide ativo">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Estratégia de estudo</span>
+      <span class="mono">Pernambuco · <b>2026</b></span>
+      <span class="mono">PMPE · CBMPE · PCPE · PPPE</span>
+    </div>
+    <div class="g2b">
+      <div>
+        <h1 class="cartaz split">Dois blocos.<br><span class="rd">Quatro</span> concursos.</h1>
+        <p class="sub" data-anim="up" style="--d:800ms;margin-top:26px">
+          Como conciliar <b style="color:var(--branco)">PMPE + CBMPE</b> em um bloco e
+          <b style="color:var(--branco)">PCPE + PPPE</b> em outro — estudando a base de matérias que se
+          repete nos editais e ajustando só o que é exclusivo de cada corporação.
+        </p>
+        <p class="lead" data-anim="up" style="--d:1000ms;margin-top:18px">
+          <span class="chave">O que muda entre os concursos é menor do que o que se repete.</span>
+        </p>
+      </div>
+      <div class="emblema" data-anim="zoom" style="--d:500ms">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle class="anel anel-1" cx="200" cy="200" r="185" stroke-dasharray="6 10"/>
+          <circle class="anel anel-2" cx="200" cy="200" r="150" stroke-dasharray="2 14"/>
+          <circle class="grade" cx="200" cy="200" r="115" fill="none"/>
+          <line class="grade" x1="200" y1="85" x2="200" y2="315"/>
+          <line class="grade" x1="85" y1="200" x2="315" y2="200"/>
+          <line class="grade" x1="118" y1="118" x2="282" y2="282"/>
+          <line class="grade" x1="282" y1="118" x2="118" y2="282"/>
+          <circle cx="200" cy="200" r="52" fill="rgba(229,32,46,.14)" stroke="#E5202E" stroke-width="2"/>
+          <text class="centro-txt" x="200" y="196" text-anchor="middle">BASE</text>
+          <text class="centro-txt" x="200" y="212" text-anchor="middle">COMUM</text>
+          <circle class="no" cx="200" cy="85" r="6"/><text class="rotulo" x="200" y="68" text-anchor="middle">PMPE</text>
+          <circle class="no" cx="315" cy="200" r="6"/><text class="rotulo" x="315" y="183" text-anchor="middle">CBMPE</text>
+          <circle class="no" cx="200" cy="315" r="6"/><text class="rotulo" x="200" y="338" text-anchor="middle">PCPE</text>
+          <circle class="no" cx="85" cy="200" r="6"/><text class="rotulo" x="85" y="183" text-anchor="middle">PPPE</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     02 · POR QUE UM SÓ — moldura de vidro arredondada (ref. 1)
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="janela" data-anim="zoom" style="--d:100ms">
+      <div class="janela-bar">
+        <span class="marca">PE//2026</span>
+        <nav><span class="on">Diagnóstico</span><span>Blocos</span><span>Rotina</span><span>Método</span></nav>
+        <span class="pesq">⌕ Buscar disciplina…</span>
+      </div>
+      <div class="janela-body">
+        <div class="eyebrow" data-anim="down" style="--d:250ms">O ponto de partida</div>
+        <h2 class="titulo split">Por que apostar em <span class="rd">um único</span> edital?</h2>
+        <div class="tri">
+          <div data-anim="left" style="--d:200ms">
+            <div class="col-titulo bom" data-anim="left" style="--d:200ms">
+              <span class="col-tag">✕ Erro comum</span>
+              <h3 class="col-nome">O que você faz</h3>
+              <span class="col-sub">Estudar para um concurso só</span>
+            </div>
+            <ul class="disc">
+              <li class="solo" data-anim="left" style="--d:300ms">Uma única chance por ciclo</li>
+              <li class="solo" data-anim="left" style="--d:380ms">Anos de espera até o edital sair</li>
+              <li class="solo" data-anim="left" style="--d:460ms">Se atrasar ou for suspenso, você para</li>
+              <li class="solo" data-anim="left" style="--d:540ms">A base estudada fica ociosa</li>
+            </ul>
+          </div>
+          <div class="seta-mid" data-anim="zoom" style="--d:700ms">➜</div>
+          <div data-anim="right" style="--d:800ms">
+            <div class="col-titulo bom" data-anim="right" style="--d:800ms">
+              <span class="col-tag">✓ Estratégia</span>
+              <h3 class="col-nome">O que você deve fazer</h3>
+              <span class="col-sub">Estudar em bloco, para dois concursos</span>
+            </div>
+            <ul class="disc">
+              <li class="comum" data-anim="right" style="--d:850ms">Dois concursos por bloco</li>
+              <li class="comum" data-anim="right" style="--d:930ms">Uma prova serve de treino para a outra</li>
+              <li class="comum" data-anim="right" style="--d:1010ms">Se um atrasa, o outro segue</li>
+              <li class="comum" data-anim="right" style="--d:1090ms">Toda hora estudada rende duas vezes</li>
+            </ul>
+          </div>
+        </div>
+        <div class="divisor" data-anim="clip" style="--d:1150ms"></div>
+        <p class="lead" data-anim="fade" style="--d:1250ms">
+          <span class="chave">Em 2026, PMPE, CBMPE, PCPE e PPPE estão autorizados ou previstos ao mesmo tempo.</span>
+          Quem já tem a base pronta só encaixa o específico quando o edital sai.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     03 · OS QUATRO ALVOS — cards numerados de portfólio (ref. 2)
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Panorama · Julho 2026</span>
+      <span class="mono">Bancas dos novos editais: <b>em definição</b></span>
+    </div>
+    <h2 class="cartaz split" style="margin-bottom:30px">Os quatro <span class="rd">alvos</span></h2>
+    <div class="g4">
+      <article class="proj" data-anim="up" style="--d:150ms">
+        <div class="n">01</div>
+        <h3>PMPE · Soldado</h3>
+        <p>Nível médio. Último edital em 2023, banca Instituto AOCP, 2.400 vagas. Prova: 60 questões + redação.</p>
+        <span class="seta">↗</span>
+      </article>
+      <article class="proj" data-anim="up" style="--d:280ms">
+        <div class="n">02</div>
+        <h3>CBMPE · Soldado</h3>
+        <p>Nível médio. Edital 2023 (AOCP), 600 vagas. Novo certame autorizado: 510 Soldados + 60 Oficiais.</p>
+        <span class="seta">↗</span>
+      </article>
+      <article class="proj" data-anim="up" style="--d:410ms">
+        <div class="n">03</div>
+        <h3>PCPE · Agente e Escrivão</h3>
+        <p>Nível superior. Edital 2023/24, banca Cebraspe. Novo concurso autorizado com mais de mil vagas.</p>
+        <span class="seta">↗</span>
+      </article>
+      <article class="proj" data-anim="up" style="--d:540ms">
+        <div class="n">04</div>
+        <h3>PPPE · Policial Penal</h3>
+        <p>Nível superior. Último edital 2021 (Cebraspe). Novo concurso autorizado com 700 vagas.</p>
+        <span class="seta">↗</span>
+      </article>
+    </div>
+    <p class="nota" data-anim="fade" style="--d:700ms">
+      Os conteúdos apresentados a seguir são os dos <b>últimos editais publicados</b> — a base histórica, que serve de norte até o novo edital sair.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     04 · NÚCLEO COMUM — diagrama orbital tecnológico (bola central)
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="hud" data-anim="zoom" style="--d:100ms;text-align:center">
+      <span class="hud-tag">Núcleo · 4/4 concursos</span>
+      <div class="scanline" data-anim="fade"></div>
+      <div class="eyebrow centro puro" data-anim="down" style="--d:250ms">O que se repete nos quatro editais</div>
+      <h2 class="titulo split">O <span class="rd">núcleo comum</span></h2>
+
+      <div class="orbita">
+        <!-- Camada SVG: anéis, grade, radar, conexões -->
+        <svg class="orbita-svg" viewBox="0 0 400 400" aria-hidden="true">
+          <defs>
+            <radialGradient id="radarGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(255,42,60,.45)"/>
+              <stop offset="60%" stop-color="rgba(255,42,60,.12)"/>
+              <stop offset="100%" stop-color="rgba(255,42,60,0)"/>
+            </radialGradient>
+            <linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="rgba(255,42,60,0)"/>
+              <stop offset="100%" stop-color="rgba(255,42,60,.55)"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Grade holográfica: cruz e diagonais -->
+          <line class="grade-orb" x1="200" y1="20" x2="200" y2="380"/>
+          <line class="grade-orb" x1="20" y1="200" x2="380" y2="200"/>
+          <line class="grade-orb diag" x1="73" y1="73" x2="327" y2="327"/>
+          <line class="grade-orb diag" x1="327" y1="73" x2="73" y2="327"/>
+
+          <!-- Anéis concêntricos (4 níveis) -->
+          <circle class="anel-orb" cx="200" cy="200" r="180"/>
+          <circle class="anel-orb dashed rotate" cx="200" cy="200" r="150"/>
+          <circle class="anel-orb ciano rotate-rev" cx="200" cy="200" r="120"/>
+          <circle class="anel-orb dashed rotate-fast" cx="200" cy="200" r="90"/>
+
+          <!-- Radar sweep (cone girando) -->
+          <g class="radar-sweep">
+            <path d="M 200 200 L 380 200 A 180 180 0 0 0 327 73 Z" fill="url(#sweepGrad)" opacity=".5"/>
+          </g>
+
+          <!-- Linhas de conexão núcleo→satélites -->
+          <line class="linhas-orb" x1="200" y1="200" x2="60" y2="60"/>
+          <line class="linhas-orb" x1="200" y1="200" x2="340" y2="60"/>
+          <line class="linhas-orb" x1="200" y1="200" x2="60" y2="340"/>
+          <line class="linhas-orb" x1="200" y1="200" x2="340" y2="340"/>
+
+          <!-- Nós nos anéis (pontos de dados nos cruzamentos) -->
+          <circle class="no-orb" cx="60" cy="60" r="4"/>
+          <circle class="no-orb" cx="340" cy="60" r="4"/>
+          <circle class="no-orb" cx="60" cy="340" r="4"/>
+          <circle class="no-orb" cx="340" cy="340" r="4"/>
+          <!-- Nós ciano intermediários -->
+          <circle class="no-orb ciano" cx="200" cy="50" r="3"/>
+          <circle class="no-orb ciano" cx="200" cy="350" r="3"/>
+          <circle class="no-orb ciano" cx="50" cy="200" r="3"/>
+          <circle class="no-orb ciano" cx="350" cy="200" r="3"/>
+
+          <!-- Tick marks (mostrador) -->
+          <g stroke="rgba(255,42,60,.4)" stroke-width="1">
+            <line x1="200" y1="10" x2="200" y2="20"/>
+            <line x1="200" y1="380" x2="200" y2="390"/>
+            <line x1="10" y1="200" x2="20" y2="200"/>
+            <line x1="380" y1="200" x2="390" y2="200"/>
+          </g>
+        </svg>
+
+        <!-- Leitura de coordenadas nos 4 cantos -->
+        <div class="orb-readout tl">SEC-01<br><b>N●</b> 4.0</div>
+        <div class="orb-readout tr">CORE<br><b>SYNC</b></div>
+        <div class="orb-readout bl">NODE<br><b>0xPE</b></div>
+        <div class="orb-readout br">SIGNAL<br><b>99%</b></div>
+
+        <!-- Núcleo — bola que se movimenta (bouncing corner-to-corner) -->
+        <div class="nucleo">Cai nos<br>4 concursos</div>
+
+        <!-- 4 satélites (matérias) nos cantos extremos -->
+        <div class="satelite" style="top:5%;left:5%;--d:.4s">Língua Portuguesa</div>
+        <div class="satelite right" style="top:5%;left:95%;--d:.6s">Informática</div>
+        <div class="satelite" style="top:95%;left:5%;--d:.8s">Raciocínio Lógico</div>
+        <div class="satelite right" style="top:95%;left:95%;--d:1s">Direito Constitucional</div>
+      </div>
+
+      <p class="lead" data-anim="up" style="--d:1300ms;margin:20px auto 0">
+        <span class="chave">Essas quatro matérias são o coração de qualquer preparação em PE.</span>
+        Mudou a banca, mudou o edital — elas continuam lá.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     05 · TABELA — HUD com colchetes e cabeçalho mono
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="hud" data-anim="up" style="--d:100ms">
+      <span class="hud-tag">Matriz comparativa</span>
+      <div class="scanline" data-anim="fade"></div>
+      <div class="eyebrow" data-anim="down" style="--d:200ms">Visão geral</div>
+      <h2 class="titulo split">O mapa dos <span class="rd">quatro editais</span></h2>
+      <div class="tabela-wrap" data-anim="up" style="--d:300ms">
+        <table>
+          <thead>
+            <tr><th style="text-align:left">Disciplina</th><th>PMPE</th><th>CBMPE</th><th>PCPE</th><th>PPPE</th></tr>
+          </thead>
+          <tbody>
+            <tr class="destaque"><th>Língua Portuguesa</th><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr class="destaque"><th>Informática</th><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr class="destaque"><th>Raciocínio Lógico</th><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr class="destaque"><th>Direito Constitucional</th><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr><th>História de Pernambuco</th><td class="sim">✔</td><td class="sim">✔</td><td class="nao">—</td><td class="nao">—</td></tr>
+            <tr><th>Direito Administrativo</th><td class="nao">—</td><td class="nao">—</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr><th>Direito Penal</th><td class="nao">—</td><td class="nao">—</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr><th>Processo Penal</th><td class="nao">—</td><td class="nao">—</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr><th>Legislação Estadual</th><td class="nao">—</td><td class="nao">—</td><td class="sim">✔</td><td class="sim">✔</td></tr>
+            <tr><th>Direitos Humanos</th><td class="sim">✔</td><td class="nao">—</td><td class="nao">—</td><td class="sim">✔</td></tr>
+            <tr><th>Execução Penal (LEP)</th><td class="nao">—</td><td class="nao">—</td><td class="nao">—</td><td class="sim">✔</td></tr>
+            <tr><th>Matemática · Física · Biologia</th><td class="nao">—</td><td class="sim">✔</td><td class="nao">—</td><td class="nao">—</td></tr>
+            <tr><th>Estatística / Arquivologia</th><td class="nao">—</td><td class="nao">—</td><td class="sim">✔</td><td class="nao">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="legenda" data-anim="fade" style="--d:600ms">
+        <span><b class="sim">✔</b> Consta no último edital publicado</span>
+        <span><b class="nao">—</b> Não consta</span>
+        <span style="color:var(--vermelho)">Linhas destacadas = caem nos quatro</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     06 · BLOCO 1 · MATÉRIAS — moldura de vidro (ref. 1), mas em
+     composição espelhada e com selo central
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="janela" data-anim="up" style="--d:100ms">
+      <div class="janela-bar">
+        <span class="marca">BLOCO 01</span>
+        <nav><span>Diagnóstico</span><span class="on">Militares</span><span>Civis</span><span>Método</span></nav>
+        <span class="pesq">⌕ AOCP · 2023</span>
+      </div>
+      <div class="janela-body">
+        <h2 class="cartaz split" style="margin-bottom:24px">PMPE <span class="rd">+</span> CBMPE</h2>
+        <div class="tri" style="align-items:start">
+          <div>
+            <div class="cab" data-anim="left" style="--d:250ms">
+              <div class="escudo">PM</div>
+              <div><h3>PMPE — Soldado</h3><div class="meta">Edital 2023 · AOCP · 60 questões</div></div>
+            </div>
+            <ul class="disc">
+              <li class="comum" data-anim="left" style="--d:320ms">Língua Portuguesa</li>
+              <li class="comum" data-anim="left" style="--d:370ms">Informática</li>
+              <li class="comum" data-anim="left" style="--d:420ms">Raciocínio Lógico</li>
+              <li class="comum" data-anim="left" style="--d:470ms">Direito Constitucional</li>
+              <li class="comum" data-anim="left" style="--d:520ms">História de Pernambuco</li>
+              <li class="solo" data-anim="left" style="--d:570ms">Direitos Humanos e Legislação Extravagante</li>
+            </ul>
+          </div>
+          <div class="selo" data-anim="zoom" style="--d:700ms">
+            <div>
+              <div class="big" data-count="5" data-suf="/6">0</div>
+              <div class="cap">matérias da PMPE<br>também caem no CBMPE</div>
+            </div>
+          </div>
+          <div>
+            <div class="cab" data-anim="right" style="--d:250ms">
+              <div class="escudo">CB</div>
+              <div><h3>CBMPE — Soldado</h3><div class="meta">Edital 2023 · AOCP · 60 questões</div></div>
+            </div>
+            <ul class="disc">
+              <li class="comum" data-anim="right" style="--d:320ms">Língua Portuguesa</li>
+              <li class="comum" data-anim="right" style="--d:370ms">Informática</li>
+              <li class="comum" data-anim="right" style="--d:420ms">Raciocínio Lógico</li>
+              <li class="comum" data-anim="right" style="--d:470ms">Direito Constitucional</li>
+              <li class="comum" data-anim="right" style="--d:520ms">História de Pernambuco</li>
+              <li class="solo" data-anim="right" style="--d:570ms">Matemática</li>
+              <li class="solo" data-anim="right" style="--d:620ms">Física</li>
+              <li class="solo" data-anim="right" style="--d:670ms">Biologia</li>
+              <li class="solo" data-anim="right" style="--d:720ms">Atualidades</li>
+            </ul>
+          </div>
+        </div>
+        <div class="legenda" data-anim="fade" style="--d:900ms">
+          <span><b style="color:var(--vermelho)">■</b> Comum aos dois</span>
+          <span><b style="color:var(--cinza-2)">□</b> Exclusiva daquele concurso</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     07 · BLOCO 1 · COMUM x EXCLUSIVO — colunas com régua vertical
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow" data-anim="down">Bloco 1 · O que aproveitar</div>
+    <h2 class="titulo split">A base que serve <span class="rd">para os dois</span></h2>
+    <div class="g3">
+      <div data-anim="up" style="--d:150ms;border-top:2px solid var(--vermelho);padding-top:18px">
+        <div class="mono" style="margin-bottom:10px"><b>01</b> · Estude uma vez, use nos dois</div>
+        <h3 style="font-family:var(--cond);font-weight:700;text-transform:uppercase;font-size:20px;letter-spacing:.05em;color:var(--vermelho);margin-bottom:14px">Base compartilhada</h3>
+        <ul class="disc">
+          <li class="comum">Língua Portuguesa</li>
+          <li class="comum">Informática</li>
+          <li class="comum">Raciocínio Lógico</li>
+          <li class="comum">Direito Constitucional</li>
+          <li class="comum">História de Pernambuco</li>
+        </ul>
+        <p class="nota">+ redação dissertativa, cobrada nos dois editais.</p>
+      </div>
+      <div data-anim="up" style="--d:300ms;border-top:2px solid rgba(255,255,255,.15);padding-top:18px">
+        <div class="mono" style="margin-bottom:10px"><b>02</b> · Só PMPE</div>
+        <h3 style="font-family:var(--cond);font-weight:700;text-transform:uppercase;font-size:20px;letter-spacing:.05em;margin-bottom:14px">Camada militar</h3>
+        <ul class="disc">
+          <li class="solo">Direitos Humanos</li>
+          <li class="solo">Legislação Extravagante — Abuso de Autoridade, Tortura, Drogas, ECA, Maria da Penha</li>
+          <li class="solo">Estatuto dos Militares de PE (Lei 6.783/74)</li>
+        </ul>
+      </div>
+      <div data-anim="up" style="--d:450ms;border-top:2px solid rgba(255,255,255,.15);padding-top:18px">
+        <div class="mono" style="margin-bottom:10px"><b>03</b> · Só CBMPE</div>
+        <h3 style="font-family:var(--cond);font-weight:700;text-transform:uppercase;font-size:20px;letter-spacing:.05em;margin-bottom:14px">Camada de exatas</h3>
+        <ul class="disc">
+          <li class="solo">Matemática</li>
+          <li class="solo">Física</li>
+          <li class="solo">Biologia</li>
+          <li class="solo">Atualidades</li>
+        </ul>
+        <p class="nota">É aqui que mora o esforço extra do bombeiro.</p>
+      </div>
+    </div>
+    <p class="lead" data-anim="fade" style="--d:650ms;margin-top:22px">
+      <span class="chave">5 matérias garantem os dois. Depois você escolhe qual camada específica carregar.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     08 · ROTINA BLOCO 1 — tabela de missões + fases semanais
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Bloco 1 · Plano de execução</span>
+      <span class="mono">PMPE + CBMPE · Banca: <b>AOCP</b></span>
+    </div>
+    <h2 class="titulo split" style="margin-bottom:20px">Como estudar <span class="rd">PMPE + CBMPE</span></h2>
+    <div class="fases" data-anim="up" style="--d:200ms;margin-bottom:24px">
+      <div class="fase"><span class="fase-n">S1</span><span class="fase-lbl">BASE</span></div>
+      <div class="fase"><span class="fase-n">S2</span><span class="fase-lbl">BASE</span></div>
+      <div class="fase"><span class="fase-n">S3</span><span class="fase-lbl">APROFUNDAMENTO</span></div>
+      <div class="fase"><span class="fase-n">S4</span><span class="fase-lbl">REVISÃO R1</span></div>
+      <div class="fase"><span class="fase-n">S5</span><span class="fase-lbl">CONSOLIDAÇÃO</span></div>
+    </div>
+    <div class="tabela-wrap" data-anim="up" style="--d:350ms">
+      <table class="missao-tbl">
+        <thead><tr>
+          <th style="text-align:left;width:60px">DIA</th>
+          <th style="text-align:left">MISSÃO 1</th>
+          <th style="text-align:center;width:110px">META</th>
+          <th style="text-align:left">MISSÃO 2</th>
+          <th style="text-align:center;width:110px">META</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="dia-lbl">SEG</td><td>Português: Compreensão e interpretação de textos</td><td class="meta-q">20 QC AOCP</td><td>Constitucional: Princípios fundamentais</td><td class="meta-q">20 QC</td></tr>
+          <tr><td class="dia-lbl">TER</td><td>Português: Tipologias e gêneros textuais</td><td class="meta-q">20 QC</td><td>Constitucional: Direitos e deveres individuais e coletivos</td><td class="meta-q">20 QC</td></tr>
+          <tr><td class="dia-lbl">QUA</td><td>Português: Ortografia e acentuação gráfica</td><td class="meta-q">25 QC</td><td>Rac. Lógico: Proposições e conectivos lógicos</td><td class="meta-q">20 QC</td></tr>
+          <tr><td class="dia-lbl">QUI</td><td>Informática: Internet, intranet e segurança</td><td class="meta-q">20 QC</td><td>Constitucional: Direitos sociais</td><td class="meta-q">20 QC</td></tr>
+          <tr><td class="dia-lbl">SEX</td><td>Português: Emprego das classes de palavras</td><td class="meta-q">25 QC</td><td>Rac. Lógico: Quantificadores e falácias</td><td class="meta-q">20 QC</td></tr>
+          <tr><td class="dia-lbl">SÁB</td><td>História de PE: Capitanias e economia do açúcar</td><td class="meta-q">20 QC</td><td>Informática: Windows e organização de arquivos</td><td class="meta-q">20 QC</td></tr>
+          <tr><td class="dia-lbl">DOM</td><td>Revisão do caderno de erros + 1 redação</td><td class="meta-q">REVISÃO</td><td>Simulado AOCP (60 questões)</td><td class="meta-q">SIMULADO</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legenda" data-anim="fade" style="--d:500ms">
+      <span><b style="color:var(--vermelho)">QC</b> = Questões Comentadas da banca</span>
+      <span style="color:var(--ciano)">S1-S2: base · S3: aprofundamento · S4: revisão 24h/7d/30d · S5: consolidação</span>
+    </div>
+    <div class="g3" style="margin-top:18px">
+      <div data-anim="up" style="--d:580ms"><div class="mono" style="margin-bottom:6px"><b>Regra do bloco</b></div><p class="lead">3 dias na base comum, 2 nas camadas específicas. A base é o que decide a aprovação nos dois concursos.</p></div>
+      <div data-anim="up" style="--d:680ms"><div class="mono" style="margin-bottom:6px"><b>Foco na banca</b></div><p class="lead">Os dois editais de 2023 foram AOCP. Treine exclusivamente com questões AOCP — o estilo de cobrança é o mesmo.</p></div>
+      <div data-anim="up" style="--d:780ms"><div class="mono" style="margin-bottom:6px"><b>TAF em paralelo</b></div><p class="lead">Aptidão física é eliminatória nos dois. Treine 3x por semana desde já — não dá para começar depois do edital.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     09 · BLOCO 2 · MATÉRIAS — dossiê HUD com listas pontilhadas
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="hud" data-anim="up" style="--d:100ms">
+      <span class="hud-tag">Bloco 02 · Cebraspe</span>
+      <div class="scanline" data-anim="fade"></div>
+      <h2 class="cartaz split" style="margin-bottom:22px">PCPE <span class="rd">+</span> PPPE</h2>
+      <div class="tri" style="align-items:start">
+        <div>
+          <div class="cab" data-anim="left" style="--d:250ms">
+            <div class="escudo">PC</div>
+            <div><h3>PCPE — Agente / Escrivão</h3><div class="meta">Edital 2023/24 · Cebraspe</div></div>
+          </div>
+          <ul class="dossie">
+            <li class="comum" data-anim="left" style="--d:300ms"><span>Língua Portuguesa</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="left" style="--d:340ms"><span>Informática</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="left" style="--d:380ms"><span>Raciocínio Lógico</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="left" style="--d:420ms"><span>Legislação Estadual</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="left" style="--d:460ms"><span>Direito Constitucional</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="left" style="--d:500ms"><span>Direito Administrativo</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="left" style="--d:540ms"><span>Direito Penal</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="left" style="--d:580ms"><span>Direito Processual Penal</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="solo" data-anim="left" style="--d:620ms"><span>Estatística e Contabilidade</span><i class="pt"></i><span class="st">Agente</span></li>
+            <li class="solo" data-anim="left" style="--d:660ms"><span>Arquivologia</span><i class="pt"></i><span class="st">Escrivão</span></li>
+          </ul>
+        </div>
+        <div class="selo" data-anim="zoom" style="--d:750ms">
+          <div>
+            <div class="big" data-count="8" data-suf="/10">0</div>
+            <div class="cap">matérias da PCPE<br>também caem na PPPE</div>
+          </div>
+        </div>
+        <div>
+          <div class="cab" data-anim="right" style="--d:250ms">
+            <div class="escudo">PP</div>
+            <div><h3>PPPE — Policial Penal</h3><div class="meta">Edital 2021 · Cebraspe</div></div>
+          </div>
+          <ul class="dossie">
+            <li class="comum" data-anim="right" style="--d:300ms"><span>Língua Portuguesa</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="right" style="--d:340ms"><span>Informática</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="right" style="--d:380ms"><span>Raciocínio Lógico</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="right" style="--d:420ms"><span>Legislação Estadual</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="right" style="--d:460ms"><span>Direito Constitucional</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="right" style="--d:500ms"><span>Direito Administrativo</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="right" style="--d:540ms"><span>Direito Penal</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="comum" data-anim="right" style="--d:580ms"><span>Direito Processual Penal</span><i class="pt"></i><span class="st">Comum</span></li>
+            <li class="solo" data-anim="right" style="--d:620ms"><span>Execução Penal (LEP)</span><i class="pt"></i><span class="st">Só PPPE</span></li>
+            <li class="solo" data-anim="right" style="--d:660ms"><span>Legislação Especial</span><i class="pt"></i><span class="st">Só PPPE</span></li>
+            <li class="solo" data-anim="right" style="--d:700ms"><span>Direitos Humanos</span><i class="pt"></i><span class="st">Só PPPE</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="nota" data-anim="fade" style="--d:900ms">
+        Os dois trazem redação dissertativa sobre segurança pública. O PPPE cobra atualidades na discursiva.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     10 · BLOCO 2 · COMUM x EXCLUSIVO — pills + coluna de destaque
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="g2b">
+      <div>
+        <div class="eyebrow" data-anim="down">Bloco 2 · O que aproveitar</div>
+        <h2 class="cartaz split">O bloco mais<br><span class="rd">rentável</span> de PE</h2>
+        <p class="lead" data-anim="up" style="--d:900ms;margin-top:22px">
+          <span class="chave">8 disciplinas idênticas, mesma banca, mesmo estilo de prova.</span>
+          Quem estuda para um está, sem esforço extra, a poucas semanas de estar pronto para o outro.
+        </p>
+        <div class="stats" data-anim="up" style="--d:1050ms;margin-top:26px">
+          <div class="stat"><div class="v" data-count="8" data-suf="">0</div><div class="l">Matérias<br>compartilhadas</div></div>
+          <div class="stat"><div class="v" data-count="3" data-suf="">0</div><div class="l">Exclusivas<br>do PPPE</div></div>
+          <div class="stat"><div class="v" data-count="2" data-suf="">0</div><div class="l">Exclusivas<br>do PCPE</div></div>
+        </div>
+      </div>
+      <div class="trilho">
+        <div class="pill" data-anim="right" style="--d:200ms">
+          <span class="n">01</span>
+          <div><h3>Base compartilhada</h3><p>Português · Informática · Rac. Lógico · Leg. Estadual · Constitucional · Administrativo · Penal · Processo Penal</p></div>
+        </div>
+        <div class="pill" data-anim="right" style="--d:340ms">
+          <span class="n">02</span>
+          <div><h3>Camada penitenciária · só PPPE</h3><p>Execução Penal (LEP 7.210/84), Legislação Especial e Direitos Humanos. A LEP é o divisor de águas.</p></div>
+        </div>
+        <div class="pill" data-anim="right" style="--d:480ms">
+          <span class="n">03</span>
+          <div><h3>Camada de cartório · só PCPE</h3><p>Estatística e Contabilidade (Agente) ou Arquivologia (Escrivão). Decida cedo entre os dois cargos.</p></div>
+        </div>
+        <div class="pill" data-anim="right" style="--d:620ms">
+          <span class="n">04</span>
+          <div><h3>Redação nos dois</h3><p>Texto dissertativo sobre segurança pública, eliminatório. Uma por semana desde o início.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     11 · ROTINA BLOCO 2 — tabela de missões + fases semanais
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Bloco 2 · Plano de execução</span>
+      <span class="mono">PCPE + PPPE · Banca: <b>Cebraspe</b></span>
+    </div>
+    <h2 class="titulo split" style="margin-bottom:20px">Como estudar <span class="rd">PCPE + PPPE</span></h2>
+    <div class="fases" data-anim="up" style="--d:200ms;margin-bottom:24px">
+      <div class="fase"><span class="fase-n">S1</span><span class="fase-lbl">BASE</span></div>
+      <div class="fase"><span class="fase-n">S2</span><span class="fase-lbl">BASE</span></div>
+      <div class="fase"><span class="fase-n">S3</span><span class="fase-lbl">APROFUNDAMENTO</span></div>
+      <div class="fase"><span class="fase-n">S4</span><span class="fase-lbl">REVISÃO R1</span></div>
+      <div class="fase"><span class="fase-n">S5</span><span class="fase-lbl">CONSOLIDAÇÃO</span></div>
+    </div>
+    <div class="tabela-wrap" data-anim="up" style="--d:350ms">
+      <table class="missao-tbl">
+        <thead><tr>
+          <th style="text-align:left;width:60px">DIA</th>
+          <th style="text-align:left">MISSÃO 1</th>
+          <th style="text-align:center;width:110px">META</th>
+          <th style="text-align:left">MISSÃO 2</th>
+          <th style="text-align:center;width:110px">META</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="dia-lbl">SEG</td><td>Direito Penal: Princípios e aplicações da lei penal</td><td class="meta-q">25 QC C/E</td><td>Português: Compreensão e interpretação</td><td class="meta-q">20 QC C/E</td></tr>
+          <tr><td class="dia-lbl">TER</td><td>Processo Penal: Inquérito policial e ação penal</td><td class="meta-q">25 QC C/E</td><td>Direito Constitucional: Organização do Estado</td><td class="meta-q">20 QC C/E</td></tr>
+          <tr><td class="dia-lbl">QUA</td><td>Direito Penal: Crimes contra a pessoa</td><td class="meta-q">25 QC C/E</td><td>Informática: Segurança e redes</td><td class="meta-q">20 QC C/E</td></tr>
+          <tr><td class="dia-lbl">QUI</td><td>Processo Penal: Provas e medidas cautelares</td><td class="meta-q">25 QC C/E</td><td>Direito Administrativo: Princípios e atos</td><td class="meta-q">20 QC C/E</td></tr>
+          <tr><td class="dia-lbl">SEX</td><td>LEP (PPPE): Direitos dos presos e deveres do Estado</td><td class="meta-q">20 QC C/E</td><td>Rac. Lógico: Proposições lógicas</td><td class="meta-q">20 QC C/E</td></tr>
+          <tr><td class="dia-lbl">SÁB</td><td>Legislação Estadual de PE</td><td class="meta-q">20 QC C/E</td><td>Redação: Tema sobre segurança pública</td><td class="meta-q">1 REDAÇÃO</td></tr>
+          <tr><td class="dia-lbl">DOM</td><td>Revisão do caderno de erros</td><td class="meta-q">REVISÃO</td><td>Simulado Cebraspe (C/E)</td><td class="meta-q">SIMULADO</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legenda" data-anim="fade" style="--d:500ms">
+      <span><b style="color:var(--vermelho)">C/E</b> = Certo/Errado (estilo Cebraspe — errar desconta)</span>
+      <span style="color:var(--ciano)">Penal e Processo Penal primeiro: mais pesados e mais repetidos nos dois</span>
+    </div>
+    <div class="g3" style="margin-top:18px">
+      <div data-anim="up" style="--d:580ms"><div class="mono" style="margin-bottom:6px"><b>Ordem certa</b></div><p class="lead">Penal e Processo Penal primeiro: mais pesadas e mais repetidas. Estatística e Arquivologia ficam para o pós-edital.</p></div>
+      <div data-anim="up" style="--d:680ms"><div class="mono" style="margin-bottom:6px"><b>Treino de C/E</b></div><p class="lead">Cebraspe usa julgamento de itens — errar desconta. Acertar 30 e errar 10 pode valer menos que 25 sem erro.</p></div>
+      <div data-anim="up" style="--d:780ms"><div class="mono" style="margin-bottom:6px"><b>Nível superior</b></div><p class="lead">PCPE e PPPE exigem diploma de curso superior em qualquer área. Confirme sua situação antes de investir.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+    12 · ERROS — grade de cards numerados (variação do estilo C)
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Diagnóstico de falhas</span>
+      <span class="mono">O que separa o aprovado do reprovado</span>
+    </div>
+    <h2 class="cartaz split" style="margin-bottom:26px">Os erros que <span class="rd">custam a vaga</span></h2>
+    <div class="g3">
+      <article class="proj" data-anim="up" style="--d:120ms"><div class="n">01</div><h3>Esperar o edital sair</h3><p>Publicado o edital, sobram 60 a 90 dias. Não dá para construir base nesse prazo — só para ajustar.</p><span class="seta">↗</span></article>
+      <article class="proj" data-anim="up" style="--d:240ms"><div class="n">02</div><h3>Misturar os dois blocos</h3><p>Militar e civil pedem camadas muito diferentes. Escolha um bloco como prioridade; o outro é bônus.</p><span class="seta">↗</span></article>
+      <article class="proj" data-anim="up" style="--d:360ms"><div class="n">03</div><h3>Ignorar a banca</h3><p>AOCP e Cebraspe cobram de formas opostas. Teoria sem questões da banca certa é meio caminho perdido.</p><span class="seta">↗</span></article>
+      <article class="proj" data-anim="up" style="--d:480ms"><div class="n">04</div><h3>Deixar o TAF para depois</h3><p>A aptidão física é eliminatória nos quatro. Não adianta gabaritar a objetiva e cair na barra.</p><span class="seta">↗</span></article>
+      <article class="proj" data-anim="up" style="--d:600ms"><div class="n">05</div><h3>Não fazer caderno de erros</h3><p>Revisar acerto é conforto. O que muda a nota é revisar o que você errou.</p><span class="seta">↗</span></article>
+      <article class="proj" data-anim="up" style="--d:720ms"><div class="n">06</div><h3>Pular a redação</h3><p>Os quatro editais têm discursiva eliminatória. Uma redação por semana, desde o começo.</p><span class="seta">↗</span></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+    13 · MÉTODO MDT — Mentalidade, Disciplina e Técnica
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Método acelerador</span>
+      <span class="mono"><b>50% M</b> · <b>30% D</b> · <b>20% T</b></span>
+    </div>
+    <h2 class="cartaz split" style="margin-bottom:22px">O método <span class="rd">MDT</span></h2>
+    <p class="lead" data-anim="up" style="--d:200ms;margin-bottom:24px">
+      Mentalidade, Disciplina e Técnica — a tríade que transforma a preparação para concursos.
+      Não é possível mudar os resultados sem antes modificar a raiz: a programação da mente.
+    </p>
+    <div class="stats" data-anim="up" style="--d:350ms">
+      <div class="stat"><div class="v" data-count="50" data-suf="%">0</div><div class="l">Mentalidade<br>o pilar principal</div></div>
+      <div class="stat"><div class="v" data-count="30" data-suf="%">0</div><div class="l">Disciplina<br>execução diária</div></div>
+      <div class="stat"><div class="v" data-count="20" data-suf="%">0</div><div class="l">Técnica<br>estratégia de estudo</div></div>
+    </div>
+    <div class="g3" style="margin-top:24px">
+      <div data-anim="up" style="--d:450ms;border-top:2px solid var(--vermelho);padding-top:14px">
+        <div class="mono" style="margin-bottom:8px"><b>M</b> · MENTALIDADE — C.A.C.</div>
+        <h3 style="font-family:var(--cond);font-weight:700;text-transform:uppercase;font-size:18px;color:var(--vermelho);margin-bottom:10px">Crenças · Atitudes · Comportamentos</h3>
+        <p class="lead" style="font-size:13px">O mindset vale mais que qualificações isoladas. A programação de fracasso vem do passado: o que você ouviu, viu e vivenciou. Para reprogramar: <b style="color:var(--branco)">Conscientize</b> as crenças limitantes, <b style="color:var(--branco)">Entenda</b> como afetam sua vida hoje e <b style="color:var(--branco)">Dissocie-se</b> delas. O processo PPSAR transforma sua programação: Pensamentos geram Sentimentos, que geram Ações, que geram Resultados.</p>
+      </div>
+      <div data-anim="up" style="--d:580ms;border-top:2px solid var(--ciano);padding-top:14px">
+        <div class="mono" style="margin-bottom:8px;color:var(--ciano)"><b>D</b> · DISCIPLINA — Ciclo do Hábito</div>
+        <h3 style="font-family:var(--cond);font-weight:700;text-transform:uppercase;font-size:18px;color:var(--ciano);margin-bottom:10px">Deixa → Rotina → Recompensa</h3>
+        <p class="lead" style="font-size:13px">Disciplina é superior à motivação — picos emocionais sobem e descem, a disciplina é constância. A regra: <b style="color:var(--branco)">estudar todos os dias</b>, não o dia todo. Use o Ciclo do Hábito: crie um gatilho (alarme, material na mesa), execute a rotina (videoaulas, questões) e defina uma recompensa imediata. 21 dias transformam procedimentos complexos em automáticos.</p>
+      </div>
+      <div data-anim="up" style="--d:710ms;border-top:2px solid rgba(255,255,255,.2);padding-top:14px">
+        <div class="mono" style="margin-bottom:8px"><b>T</b> · TÉCNICA — Pirâmide de Glasser</div>
+        <h3 style="font-family:var(--cond);font-weight:700;text-transform:uppercase;font-size:18px;margin-bottom:10px">Aprendizado passivo → ativo</h3>
+        <p class="lead" style="font-size:13px">Ler e assistir videoaulas (passivo) retém no máximo 50%. Para atingir 90%: <b style="color:var(--branco)">discuta</b> o conteúdo (70%), <b style="color:var(--branco)">resolva questões</b> comentadas (80%) e <b style="color:var(--branco)">ensine</b> para outros ou em voz alta (90%). É isso que separa quem passa de quem estuda sem resultado.</p>
+      </div>
+    </div>
+    <div class="divisor" data-anim="clip" style="--d:850ms"></div>
+    <p class="lead" data-anim="fade" style="--d:950ms">
+      <span class="chave">Focar só em técnica faz a jornada demorar. Integra M + D + T e o resultado vem até 3x mais rápido.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+    14 · COMO ESCOLHER SEU BLOCO — janela com decisão (ref. 1)
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="janela" data-anim="zoom" style="--d:100ms">
+      <div class="janela-bar">
+        <span class="marca">DECISÃO</span>
+        <nav><span class="on">Guia</span><span>Blocos</span><span>Bancas</span></nav>
+        <span class="pesq">⌕ Qual bloco é o seu?</span>
+      </div>
+      <div class="janela-body">
+        <div class="eyebrow" data-anim="down" style="--d:200ms">A encruzilhada que define tudo</div>
+        <h2 class="titulo split" data-anim="up" style="--d:300ms">Como escolher <span class="rd">seu bloco</span></h2>
+        <p class="lead" data-anim="fade" style="--d:400ms;margin-bottom:24px">
+          A decisão não é sobre qual concurso é melhor — é sobre qual caminho se encaixa na sua realidade agora.
+          Depois, o segundo bloco vira bônus.
+        </p>
+        <div class="tri" style="align-items:start">
+          <div data-anim="left" style="--d:350ms">
+            <div class="col-titulo bom" style="margin-bottom:14px">
+              <span class="col-tag">BLOCO 01</span>
+              <h3 class="col-nome">Militar</h3>
+              <span class="col-sub">PMPE + CBMPE</span>
+            </div>
+            <ul class="disc">
+              <li class="comum" data-anim="left" style="--d:420ms">Nível médio — não precisa de diploma</li>
+              <li class="comum" data-anim="left" style="--d:480ms">TAF eliminatório — preparo físico desde já</li>
+              <li class="comum" data-anim="left" style="--d:540ms">História de PE é o diferencial do bloco</li>
+              <li class="comum" data-anim="left" style="--d:600ms">Banca AOCP: questões diretas, foco em memorização</li>
+              <li class="comum" data-anim="left" style="--d:660ms">+3.000 vagas somadas nos últimos editais</li>
+            </ul>
+            <div class="divisor" style="margin-top:14px"></div>
+            <p class="nota" style="color:var(--ciano)">Ideal se: tem ensino médio, treina regularmente e quer maximizar vagas.</p>
+          </div>
+          <div class="seta-mid" data-anim="zoom" style="--d:700ms;font-size:22px">VS</div>
+          <div data-anim="right" style="--d:400ms">
+            <div class="col-titulo" style="margin-bottom:14px;border-color:rgba(255,42,60,.4);background:linear-gradient(135deg,rgba(255,42,60,.12),rgba(255,42,60,.02))">
+              <span class="col-tag" style="color:var(--vermelho)">BLOCO 02</span>
+              <h3 class="col-nome" style="text-shadow:0 0 12px rgba(255,42,60,.4)">Civil</h3>
+              <span class="col-sub">PCPE + PPPE</span>
+            </div>
+            <ul class="disc">
+              <li class="comum" data-anim="right" style="--d:470ms">Nível superior — exige diploma em qualquer área</li>
+              <li class="comum" data-anim="right" style="--d:530ms">Sem TAF — a prova é 100% escrita</li>
+              <li class="comum" data-anim="right" style="--d:590ms">Direito Penal e Processo Penal são o peso do bloco</li>
+              <li class="comum" data-anim="right" style="--d:650ms">Banca Cebraspe: julgamento C/E, cobrança interpretativa</li>
+              <li class="comum" data-anim="right" style="--d:710ms">+1.700 vagas somadas nos últimos editais</li>
+            </ul>
+            <div class="divisor" style="margin-top:14px"></div>
+            <p class="nota">Ideal se: tem curso superior, lê bem textos longos e prefere provas discursivas.</p>
+          </div>
+        </div>
+        <div class="divisor" data-anim="clip" style="--d:800ms"></div>
+        <p class="lead" data-anim="fade" style="--d:900ms">
+          <span class="chave">Não existe bloco errado. Existe começar tarde — e isso não depende do bloco, depende de você.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+    15 · OS NÚMEROS DE 2026 — stats gigantes com contadores
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Oportunidade · Ciclo 2026</span>
+      <span class="mono">Dados dos últimos editais + autorizações publicadas</span>
+    </div>
+    <div class="hud" data-anim="zoom" style="--d:100ms;text-align:center">
+      <span class="hud-tag">Inteligência de dados</span>
+      <div class="scanline" data-anim="fade"></div>
+      <div class="eyebrow centro puro" data-anim="down" style="--d:200ms">O tamanho da oportunidade</div>
+      <h2 class="titulo split">Os números de <span class="rd">2026</span></h2>
+      <p data-anim="fade" style="--d:300ms;font-family:var(--display-orb);font-size:clamp(11px,.95vw,15px);color:var(--ciano);letter-spacing:5px;text-transform:uppercase;margin-top:6px;text-align:center">por <span style="color:var(--branco);font-weight:700">ELICÊNCIA DE GAGOS</span></p>
+
+      <div class="stats" data-anim="up" style="--d:400ms;margin-top:30px">
+        <div class="stat"><div class="v" data-count="4" data-suf="">0</div><div class="l">Concursos<br>autorizados</div></div>
+        <div class="stat"><div class="v" data-count="4700" data-suf="+">0</div><div class="l">Vagas totais<br>no ciclo</div></div>
+        <div class="stat"><div class="v" data-count="2" data-suf="">0</div><div class="l">Bancas<br>envolvidas</div></div>
+        <div class="stat"><div class="v" data-count="60" data-suf="%">0</div><div class="l">Da prova que<br>se repete</div></div>
+      </div>
+
+      <div class="g3" style="margin-top:30px">
+        <div data-anim="up" style="--d:600ms;border-top:2px solid var(--vermelho);padding-top:16px">
+          <div class="mono" style="margin-bottom:8px"><b>BLOCO 01</b> · Militar</div>
+          <p class="lead" style="margin:0">
+            PMPE: 2.400 vagas (edital 2023) + CBMPE: 600 vagas (2023) + 510 Soldados + 60 Oficiais autorizados.
+            <b style="color:var(--branco)">Total histórico: 3.570 vagas.</b>
+          </p>
+        </div>
+        <div data-anim="up" style="--d:720ms;border-top:2px solid rgba(0,240,255,.5);padding-top:16px">
+          <div class="mono" style="margin-bottom:8px;color:var(--ciano)"><b>BLOCO 02</b> · Civil</div>
+          <p class="lead" style="margin:0">
+            PCPE: 1.000+ vagas (Agente + Escrivão) + PPPE: 700 vagas autorizadas.
+            <b style="color:var(--branco)">Total histórico: 1.700+ vagas.</b>
+          </p>
+        </div>
+        <div data-anim="up" style="--d:840ms;border-top:2px solid rgba(255,255,255,.15);padding-top:16px">
+          <div class="mono" style="margin-bottom:8px"><b>AMBOS OS BLOCOS</b></div>
+          <p class="lead" style="margin:0">
+            4 matérias caem em 100% dos editais. Estudar essa base é o investimento com melhor retorno
+            em segurança pública em Pernambuco.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+    16 · OFERTA — Plano de Combate
+============================================================ -->
+<section class="slide">
+  <div class="inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;text-align:center;padding:40px 24px">
+
+    <div class="metabar" data-anim="down" style="margin-bottom:18px">
+      <span class="mono">OFERTA EXCLUSIVA</span>
+      <span class="mono">Vagas limitadas</span>
+    </div>
+
+    <h2 class="cartaz split" style="margin-bottom:8px;line-height:1.1">PLANO DE<br><span class="rd">COMBATE</span></h2>
+    <p class="eyebrow" data-anim="up" style="--d:200ms;margin-bottom:28px;color:var(--ciano);font-size:clamp(13px,1.1vw,18px);letter-spacing:3px">ESTRATÉGIA COMPLETA — 4 CONCURSOS</p>
+
+    <!-- Preço -->
+    <div data-anim="up" style="--d:350ms;margin-bottom:32px">
+      <p style="font-family:var(--cond);font-size:clamp(16px,1.4vw,24px);color:var(--cinza-2);text-decoration:line-through;text-decoration-color:var(--vermelho);margin-bottom:4px">R$ 1.650,00</p>
+      <p style="font-family:var(--display-orb);font-size:clamp(48px,5.5vw,90px);font-weight:900;color:var(--vermelho);line-height:1;text-shadow:var(--glow-vermelho);letter-spacing:-1px">R$ 729<span style="font-size:.55em">,90</span></p>
+      <p style="font-family:var(--cond);font-size:clamp(15px,1.2vw,20px);color:var(--branco);margin-top:6px">12x <span style="color:var(--ciano);font-weight:700;font-size:1.15em">R$ 61,00</span> <span style="color:var(--cinza-2)">sem juros</span></p>
+    </div>
+
+    <!-- Divisor -->
+    <div class="divisor" data-anim="clip" style="--d:500ms;max-width:320px;margin:0 auto 28px"></div>
+
+    <!-- Bônus -->
+    <p class="eyebrow" data-anim="fade" style="--d:600ms;margin-bottom:18px;color:var(--branco);font-size:clamp(12px,1vw,16px);letter-spacing:4px">BÔNUS INCLUSOS</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 36px;max-width:700px;width:100%;margin-bottom:32px">
+
+      <div data-anim="left" style="--d:700ms;background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(0,240,255,.02));border:1px solid rgba(0,240,255,.15);clip-path:var(--corte);padding:22px 20px;text-align:center">
+        <div style="font-family:var(--display-orb);font-size:clamp(28px,2.8vw,42px);color:var(--ciano);margin-bottom:6px">01</div>
+        <p style="font-family:var(--display);font-size:clamp(14px,1.2vw,19px);color:var(--branco);font-weight:700">MÉTODO MDT</p>
+        <p style="font-family:var(--body);font-size:clamp(11px,.9vw,14px);color:var(--cinza);margin-top:4px">Mentalidade · Disciplina · Técnica</p>
+      </div>
+
+      <div data-anim="right" style="--d:800ms;background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(0,240,255,.02));border:1px solid rgba(0,240,255,.15);clip-path:var(--corte);padding:22px 20px;text-align:center">
+        <div style="font-family:var(--display-orb);font-size:clamp(28px,2.8vw,42px);color:var(--ciano);margin-bottom:6px">02</div>
+        <p style="font-family:var(--display);font-size:clamp(14px,1.2vw,19px);color:var(--branco);font-weight:700">APOSTILA DIGITAL</p>
+        <p style="font-family:var(--body);font-size:clamp(11px,.9vw,14px);color:var(--cinza);margin-top:4px">Material completo e atualizado</p>
+      </div>
+
+      <div data-anim="left" style="--d:900ms;background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(0,240,255,.02));border:1px solid rgba(0,240,255,.15);clip-path:var(--corte);padding:22px 20px;text-align:center">
+        <div style="font-family:var(--display-orb);font-size:clamp(28px,2.8vw,42px);color:var(--ciano);margin-bottom:6px">03</div>
+        <p style="font-family:var(--display);font-size:clamp(14px,1.2vw,19px);color:var(--branco);font-weight:700">VADE MECUM</p>
+        <p style="font-family:var(--body);font-size:clamp(11px,.9vw,14px);color:var(--cinza);margin-top:4px">Legislação organizada e anotada</p>
+      </div>
+
+      <div data-anim="right" style="--d:1000ms;background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(0,240,255,.02));border:1px solid rgba(0,240,255,.15);clip-path:var(--corte);padding:22px 20px;text-align:center">
+        <div style="font-family:var(--display-orb);font-size:clamp(28px,2.8vw,42px);color:var(--ciano);margin-bottom:6px">04</div>
+        <p style="font-family:var(--display);font-size:clamp(14px,1.2vw,19px);color:var(--branco);font-weight:700">PLATAFORMA DE ESTUDOS</p>
+        <p style="font-family:var(--body);font-size:clamp(11px,.9vw,14px);color:var(--cinza);margin-top:4px">Questões, vídeos e monitoramento</p>
+      </div>
+
+    </div>
+
+    <p class="lead" data-anim="fade" style="--d:1100ms">
+      <span class="chave">Tudo que você precisa para atacar os 4 concursos em um único plano.</span>
+    </p>
+
+  </div>
+</section>
+
+<!-- ============================================================
+    17 · FINAL — tipografia gigante (sem fontes)
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div style="text-align:center;max-width:900px;margin:0 auto">
+      <div class="divisor" data-anim="clip" style="--d:100ms;margin:0 auto 30px;max-width:200px"></div>
+      <h2 class="cartaz split">Quem estuda<br>em bloco<br><span class="rd">chega primeiro.</span></h2>
+      <p class="sub" data-anim="up" style="--d:1200ms;margin-top:30px">Não estude para um concurso.</p>
+      <p class="sub" data-anim="up" style="--d:1350ms;color:var(--branco);font-size:clamp(18px,1.6vw,28px)">Estude para o bloco inteiro.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+    18 · FONTES E PRÓXIMOS PASSOS — slide de encerramento técnico
+============================================================ -->
+<section class="slide">
+  <div class="inner">
+    <div class="metabar" data-anim="down">
+      <span class="mono">Referências · Ciclo 2026</span>
+      <span class="mono">Bases legais dos editais</span>
+    </div>
+    <h2 class="cartaz split" style="margin-bottom:26px">Fontes e <span class="rd">próximos passos</span></h2>
+    <div class="g2b" style="align-items:start;gap:clamp(18px,2.6vw,44px)">
+      <div>
+        <div class="eyebrow" data-anim="down" style="--d:200ms">Documentos de referência</div>
+        <ul class="fontes" data-anim="up" style="--d:300ms">
+          <li>
+            <b>PMPE — Edital 2023</b>
+            <a href="https://www.pmpe.pe.gov.br" target="_blank" rel="noopener">pmpe.pe.gov.br</a>
+          </li>
+          <li>
+            <b>CBMPE — Edital 2023</b>
+            <a href="https://www.cbmpe.pe.gov.br" target="_blank" rel="noopener">cbmpe.pe.gov.br</a>
+          </li>
+          <li>
+            <b>PCPE — Edital 2023/24 (Cebraspe)</b>
+            <a href="https://www.policiacivil.pe.gov.br" target="_blank" rel="noopener">policiacivil.pe.gov.br</a>
+          </li>
+          <li>
+            <b>PPPE — Edital 2021 (Cebraspe)</b>
+            <a href="https://www.seap.pe.gov.br" target="_blank" rel="noopener">seap.pe.gov.br</a>
+          </li>
+          <li>
+            <b>SERES/PE — Autorizações publicadas</b>
+            <a href="https://www.seres.pe.gov.br" target="_blank" rel="noopener">seres.pe.gov.br</a>
+          </li>
+        </ul>
+        <p class="nota" data-anim="fade" style="--d:700ms">
+          Conteúdos baseados nos últimos editais publicados. Aguarde o novo edital para ajustar o específico.
+        </p>
+      </div>
+      <div>
+        <div class="eyebrow" data-anim="down" style="--d:300ms">Seus próximos passos</div>
+        <div class="trilho" data-anim="right" style="--d:400ms">
+          <div class="pill" data-anim="right" style="--d:420ms">
+            <span class="n">01</span>
+            <div><h3>Escolha seu bloco</h3><p>Militar (PMPE+CBMPE) ou Civil (PCPE+PPPE). Decida hoje.</p></div>
+          </div>
+          <div class="pill" data-anim="right" style="--d:560ms">
+            <span class="n">02</span>
+            <div><h3>Monte o caderno de erros</h3><p>Crie agora. O caderno de erros vale mais que 50 vídeos.</p></div>
+          </div>
+          <div class="pill" data-anim="right" style="--d:700ms">
+            <span class="n">03</span>
+            <div><h3>Comece hoje pela base</h3><p>Português + Constitucional + Lógico. São a fundação dos dois blocos.</p></div>
+          </div>
+          <div class="pill" data-anim="right" style="--d:840ms">
+            <span class="n">04</span>
+            <div><h3>Acesse o Plano de Combate</h3><p>O material completo com os quatro concursos, métodos e plataforma.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divisor" data-anim="clip" style="--d:950ms"></div>
+    <p class="lead" data-anim="fade" style="--d:1050ms">
+      <span class="chave">Quem começa antes domina o edital antes. A janela de 2026 está aberta.</span>
+    </p>
+  </div>
+</section>
+
+</main>
+<script>
+/* ============================================================
+   NAVEGAÇÃO
+============================================================ */
+const slides=[...document.querySelectorAll('.slide')];
+const deck=document.getElementById('deck');
+const barra=document.getElementById('progresso');
+const elAtual=document.getElementById('atual');
+const elTotal=document.getElementById('total');
+const menu=document.getElementById('menu');
+let indice=0,travado=false;
+
+elTotal.textContent=String(slides.length).padStart(2,'0');
+
+slides.forEach((_,i)=>{
+  const b=document.createElement('button');
+  b.setAttribute('aria-label',`Slide ${i+1}`);
+  b.style.pointerEvents='none'; /* pontinhos só visuais */
+  menu.appendChild(b);
+});
+const pontos=[...menu.children];
+
+function irPara(novo){
+  if(travado||novo===indice||novo<0||novo>=slides.length)return;
+  travado=true;
+  const antigo=slides[indice];
+  antigo.classList.add('saindo');
+  antigo.classList.remove('ativo');
+  indice=novo;
+  const atual=slides[indice];
+  reiniciar(atual);
+  atual.classList.remove('saindo');
+  atual.classList.add('ativo');
+  atualizarHUD();
+  animarNumeros(atual);
+  setTimeout(()=>{antigo.classList.remove('saindo');travado=false;},700);
+}
+const proximo=()=>irPara(indice+1);
+const anterior=()=>irPara(indice-1);
+
+function atualizarHUD(){
+  barra.style.width=((indice+1)/slides.length*100)+'%';
+  elAtual.textContent=String(indice+1).padStart(2,'0');
+  pontos.forEach((p,i)=>p.classList.toggle('on',i===indice));
+}
+
+/* Reinicia as animações CSS do slide que entra */
+function reiniciar(slide){
+  slide.querySelectorAll('[data-anim], .letra, .satelite, .scanline').forEach(el=>{
+    el.style.animation='none';
+    void el.offsetWidth;
+    el.style.animation='';
+  });
+}
+
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){e.preventDefault();proximo();}
+  if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();anterior();}
+  if(e.key==='Home')irPara(0);
+  if(e.key==='End')irPara(slides.length-1);
+});
+
+/* scroll, clique e swipe desativados — navegação só por setas e teclado */
+
+document.getElementById('btnNext').addEventListener('click',e=>{e.stopPropagation();proximo();});
+document.getElementById('btnPrev').addEventListener('click',e=>{e.stopPropagation();anterior();});
+
+/* ============================================================
+   TÍTULOS LETRA POR LETRA (sem quebrar palavras)
+============================================================ */
+document.querySelectorAll('.split').forEach(titulo=>{
+  let n=0;
+  const embrulhar=no=>{
+    [...no.childNodes].forEach(filho=>{
+      if(filho.nodeType===3){
+        const frag=document.createDocumentFragment();
+        filho.textContent.split(/(\s+)/).forEach(pedaco=>{
+          if(pedaco==='')return;
+          if(/^\s+$/.test(pedaco)){
+            const sp=document.createElement('span');
+            sp.className='espaco';
+            sp.innerHTML='&nbsp;';
+            frag.appendChild(sp);
+            return;
+          }
+          const palavra=document.createElement('span');
+          palavra.className='palavra';
+          [...pedaco].forEach(ch=>{
+            const s=document.createElement('span');
+            s.className='letra';
+            s.style.setProperty('--i',n++);
+            s.textContent=ch;
+            palavra.appendChild(s);
+          });
+          frag.appendChild(palavra);
+        });
+        filho.replaceWith(frag);
+      }else if(filho.nodeType===1 && filho.tagName!=='BR'){
+        embrulhar(filho);
+      }
+    });
+  };
+  embrulhar(titulo);
+});
+
+/* ============================================================
+   CONTADORES E BARRAS
+============================================================ */
+function animarNumeros(slide){
+  slide.querySelectorAll('.barra').forEach((b,i)=>{
+    b.style.height='0%';
+    setTimeout(()=>b.style.height=b.dataset.h+'%',350+i*220);
+  });
+  slide.querySelectorAll('[data-count]').forEach((el,i)=>{
+    const alvo=+el.dataset.count, suf=el.dataset.suf||'';
+    const inicio=performance.now()+400+i*180, dur=1300;
+    const passo=agora=>{
+      const t=Math.min(Math.max((agora-inicio)/dur,0),1);
+      const eased=1-Math.pow(1-t,3);
+      el.textContent=Math.round(alvo*eased)+suf;
+      if(t<1)requestAnimationFrame(passo);
+    };
+    requestAnimationFrame(passo);
+  });
+}
+
+/* ============================================================
+   PARTÍCULAS — brasas + centelhas de energia
+============================================================ */
+const cv=document.getElementById('particulas');
+const ctx=cv.getContext('2d');
+const reduzir=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let w,h,brasas=[],centelhas=[];
+
+function dimensionar(){
+  w=cv.width=innerWidth; h=cv.height=innerHeight;
+  const qtd=Math.min(110,Math.round(w/16));
+  brasas=Array.from({length:qtd},()=>novaBrasa(true));
+  centelhas=Array.from({length:6},()=>novaCentelha());
+}
+function novaBrasa(inicial){
+  return{x:Math.random()*w,y:inicial?Math.random()*h:h+12,r:Math.random()*2+.5,
+    vy:Math.random()*.7+.18,vx:(Math.random()-.5)*.32,a:Math.random()*.6+.14,
+    vermelha:Math.random()>.4,piscar:Math.random()*Math.PI*2};
+}
+function novaCentelha(){
+  return{x:Math.random()*w,y:Math.random()*h,vida:0,maxVida:60+Math.random()*60,
+    vx:(Math.random()-.5)*1.5,vy:(Math.random()-.5)*1.5,r:Math.random()*1.5+.5,
+    vermelha:Math.random()>.3};
+}
+function desenhar(){
+  ctx.clearRect(0,0,w,h);
+  // Brasas
+  brasas.forEach((p,i)=>{
+    p.y-=p.vy; p.x+=p.vx; p.piscar+=.05;
+    if(p.y<-12)brasas[i]=novaBrasa(false);
+    const alpha=p.a*(.7+.3*Math.sin(p.piscar));
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.vermelha?`rgba(255,42,60,${alpha})`:`rgba(255,255,255,${alpha*.5})`;
+    ctx.shadowBlur=p.vermelha?12:5;
+    ctx.shadowColor=p.vermelha?'rgba(255,42,60,.9)':'rgba(255,255,255,.5)';
+    ctx.fill();
+  });
+  // Centelhas (linhas curtas de energia)
+  centelhas.forEach((c,i)=>{
+    c.vida++;
+    c.x+=c.vx; c.y+=c.vy;
+    if(c.vida>c.maxVida||c.x<0||c.x>w||c.y<0||c.y>h){
+      centelhas[i]=novaCentelha();
+      return;
+    }
+    const t=c.vida/c.maxVida;
+    const alpha=Math.sin(t*Math.PI)*.8;
+    ctx.beginPath();
+    ctx.moveTo(c.x,c.y);
+    ctx.lineTo(c.x-c.vx*4,c.y-c.vy*4);
+    ctx.strokeStyle=c.vermelha?`rgba(255,42,60,${alpha})`:`rgba(0,240,255,${alpha})`;
+    ctx.lineWidth=c.r;
+    ctx.shadowBlur=8;
+    ctx.shadowColor=c.vermelha?'rgba(255,42,60,.8)':'rgba(0,240,255,.6)';
+    ctx.stroke();
+  });
+  ctx.shadowBlur=0;
+  requestAnimationFrame(desenhar);
+}
+addEventListener('resize',dimensionar);
+dimensionar();
+if(!reduzir)desenhar();
+
+/* ============================================================
+   RELÓGIO AO VIVO no HUD
+============================================================ */
+function atualizarRelogio(){
+  const el=document.getElementById('sysTime');
+  if(!el)return;
+  const d=new Date();
+  const hh=String(d.getHours()).padStart(2,'0');
+  const mm=String(d.getMinutes()).padStart(2,'0');
+  const ss=String(d.getSeconds()).padStart(2,'0');
+  el.textContent=`${hh}:${mm}:${ss}`;
+}
+setInterval(atualizarRelogio,1000);
+atualizarRelogio();
+
+/* ============================================================
+   ADICIONAR cantos decorativos nos HUDs
+============================================================ */
+document.querySelectorAll('.hud').forEach(hud=>{
+  const tr=document.createElement('span');
+  tr.className='canto-tr';
+  const bl=document.createElement('span');
+  bl.className='canto-bl';
+  hud.appendChild(tr);
+  hud.appendChild(bl);
+});
+
+/* ============================================================
+   DATA-GLITCH nos .cartaz.split — pega o texto limpo para o efeito
+============================================================ */
+document.querySelectorAll('.cartaz.split').forEach(el=>{
+  // Pega o texto bruto, ignorando spans internos
+  const txt=el.textContent.replace(/\s+/g,' ').trim();
+  el.setAttribute('data-glitch',txt);
+});
+
+/* ============================================================
+   EFEITO TILT 3D nos .proj (microinteração)
+============================================================ */
+if(matchMedia('(hover:hover)').matches){
+  document.querySelectorAll('.proj').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const cx=(e.clientX-r.left)/r.width-.5;
+      const cy=(e.clientY-r.top)/r.height-.5;
+      card.style.transform=`translateY(-8px) perspective(800px) rotateY(${cx*6}deg) rotateX(${-cy*6}deg)`;
+    });
+    card.addEventListener('mouseleave',()=>{card.style.transition='transform .5s var(--easing)';card.style.transform='';setTimeout(()=>card.style.transition='',500);});
+  });
+}
+
+atualizarHUD();
+animarNumeros(slides[0]);
+</script>
+</body>
+</html>
